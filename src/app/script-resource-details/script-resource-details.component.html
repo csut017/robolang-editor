@@ -1,0 +1,21 @@
+<form clrForm>
+  <clr-input-container>
+    <label>Name</label>
+    <input clrInput placeholder="name" name="input" [(ngModel)]="currentResource.name" required />
+    <clr-control-error>This field is required!</clr-control-error>
+  </clr-input-container>
+  <clr-select-container>
+    <label>Data Type</label>
+    <select clrSelect name="resourceType" [(ngModel)]="currentResource.resourceType">
+      <option *ngFor="let resourceType of resourceTypes" value="{{resourceType.id}}">{{resourceType.value}}</option>
+    </select>
+  </clr-select-container>
+  <clr-textarea-container *ngIf="currentContent">
+    <label>Content</label>
+    <textarea clrTextarea [(ngModel)]="currentContent.resource" name="content"></textarea>
+  </clr-textarea-container>
+  <div>
+    <button class="btn btn-danger-outline pull-right" (click)="delete()">Delete Resource</button>
+    <button class="btn btn-primary" (click)="save()">Save Changes</button>
+  </div>
+</form>

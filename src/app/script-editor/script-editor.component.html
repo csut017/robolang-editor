@@ -1,0 +1,10 @@
+<form clrForm>
+  <clr-textarea-container>
+    <textarea clrTextarea [(ngModel)]="currentScript.script" name="script" class="script-editor"></textarea>
+  </clr-textarea-container>
+
+  <div>
+      <button class="btn btn-success-outline pull-right" (click)="validate()">Validate Script</button>
+      <button class="btn btn-primary" (click)="save()">Save Changes</button>
+    </div>
+</form>

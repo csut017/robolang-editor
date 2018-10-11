@@ -1,0 +1,145 @@
+<div class="main-container">
+  <app-header view="Scripts"></app-header>
+
+  <div class="content-container">
+    <div class="content-area">
+      <h1>
+        <div class="clr-row">
+          <div class="clr-col">
+            {{currentScript ? (currentScript.name || 'new script') : 'Scripts'}}
+          </div>
+          <div class="clr-col">
+            <div class="alert alert-success" *ngIf="actionMessage">
+              <div class="alert-items">
+                <div class="alert-item static">
+                  <div class="alert-icon-wrapper">
+                    <clr-icon class="alert-icon" shape="check-circle"></clr-icon>
+                  </div>
+                  <span class="alert-text">
+                    {{actionMessage}}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </h1>
+      <div *ngIf="currentScript">
+        <div class="clr-row">
+          <div class="clr-col-2">
+            <clr-tree-node>
+              <button class="clr-treenode-link" [class.active]="view.currentView=='details'" (click)="scriptView.changeView('details')">
+                <clr-icon shape="scroll"></clr-icon>
+                Details
+              </button>
+            </clr-tree-node>
+            <clr-tree-node>
+              <button class="clr-treenode-link" [class.active]="view.currentView=='script'" (click)="scriptView.changeView('script')">
+                <clr-icon shape="note"></clr-icon>
+                Script
+              </button>
+            </clr-tree-node>
+            <clr-tree-node *ngIf="!currentScript.isAdding">
+              <button class="clr-treenode-link" [class.active]="view.currentView=='parameters'" (click)="scriptView.changeView('parameters')">
+                <clr-icon shape="view-list"></clr-icon>
+                Parameters
+              </button>
+              <ng-template [clrIfExpanded]="true">
+                <clr-tree-node *ngFor="let param of currentScript.parameters">
+                  <button (click)="openParameter(param)" class="clr-treenode-link" [class.active]="view.currentView=='parameter' && currentParameter == param">
+                    <clr-icon shape="minus"></clr-icon>
+                    {{param.name}}
+                    <span class="badge badge-success" *ngIf="param.isRequired">Required</span>
+                  </button>
+                </clr-tree-node>
+              </ng-template>
+            </clr-tree-node>
+            <clr-tree-node *ngIf="!currentScript.isAdding">
+              <button class="clr-treenode-link" [class.active]="view.currentView=='resources'" (click)="scriptView.changeView('resources')">
+                <clr-icon shape="file-group"></clr-icon>
+                Resources
+              </button>
+              <ng-template [clrIfExpanded]="true">
+                <clr-tree-node *ngFor="let resource of currentScript.resources">
+                  <button (click)="openResource(resource)" class="clr-treenode-link" [class.active]="view.currentView=='resource' && currentResource == resource">
+                    <clr-icon shape="file"></clr-icon>
+                    {{resource.name}} 
+                    <span class="badge">{{resource.resourceTypeName}}</span>
+                  </button>
+                </clr-tree-node>
+              </ng-template>
+            </clr-tree-node>
+          </div>
+          <div class="clr-col">
+            <div *ngIf="isLoading">
+              <div class="centre-block">
+                <span class="spinner">
+                  Loading...
+                </span>
+              </div>
+            </div>
+            <div *ngIf="!isLoading && view.currentView=='details'">
+              <app-script-details [currentScript]="currentScript" (saving)="save($event)" (deleting)="delete($event)"></app-script-details>
+            </div>
+            <div *ngIf="!isLoading && view.currentView=='script'">
+              <app-script-editor [currentScript]="currentScript" (saving)="save($event)"></app-script-editor>
+            </div>
+            <div *ngIf="!isLoading && view.currentView=='parameters'">
+              <app-script-parameters [currentScript]="currentScript"></app-script-parameters>
+            </div>
+            <div *ngIf="!isLoading && view.currentView=='parameter'">
+              <app-script-parameter-details [currentScript]="currentScript" [currentParameter]="currentParameter"
+                (saving)="save($event)"></app-script-parameter-details>
+            </div>
+            <div *ngIf="!isLoading && view.currentView=='resources'">
+              <app-script-resources [currentScript]="currentScript"></app-script-resources>
+            </div>
+            <div *ngIf="!isLoading && view.currentView=='resource'">
+              <app-script-resource-details [currentScript]="currentScript" [currentResource]="currentResource" (saving)="save($event)"></app-script-resource-details>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="!currentScript">
+        <div>
+          Please select a script to view.
+        </div>
+      </div>
+    </div>
+    <nav class="sidenav">
+      <section class="sidenav-content">
+        <section class="nav-group collapsible">
+          <input id="scripts" type="checkbox">
+          <label for="scripts">
+            <clr-icon shape="scroll"></clr-icon>
+            Scripts
+          </label>
+          <ul class="nav-list">
+            <li *ngFor="let script of scripts">
+              <a href="javascript://" [class.active]="currentScript && (currentScript.id==script.id)" class="nav-link"
+                (click)="changeScript(script)">
+                <span [class.inactive]="script.flags">
+                  {{script.name}}
+                </span>
+                <span class="badge">{{script.categoryName}}</span>
+                <span class="badge badge-blue" *ngIf="script.isNew">new</span>
+              </a>
+            </li>
+          </ul>
+        </section>
+        <a href="javascript://" class="nav-link" (click)="startNewScript()">
+          <clr-icon shape="plus-circle"></clr-icon>
+          Start New Script
+        </a>
+        <a href="javascript://" class="nav-link" (click)="exportScripts()">
+          <clr-icon shape="download"></clr-icon>
+          Export Scripts
+        </a>
+        <a href="javascript://" class="nav-link" (click)="importScripts()">
+          <clr-icon shape="upload"></clr-icon>
+          Import Scripts
+        </a>
+      </section>
+    </nav>
+  </div>
+</div>

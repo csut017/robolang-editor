@@ -1,0 +1,30 @@
+<header class="header-6">
+  <div class="branding">
+    <a routerLink="/scripts" class="nav-link">
+      <clr-icon shape="scroll" class="is-solid"></clr-icon>
+      <span class="title">RoboLang</span>
+    </a>
+  </div>
+  <div class="header-nav">
+    <a routerLink="/scripts" [class.active]="view=='Scripts'" class="nav-link nav-text">Scripts</a>
+    <a routerLink="/robot" [class.active]="view=='Robots'" class="nav-link nav-text">Robot</a>
+  </div>
+  <div class="header-actions">
+    <clr-dropdown>
+      <button class="nav-icon" clrDropdownTrigger>
+        <clr-icon shape="book"></clr-icon>
+        <clr-icon shape="caret down"></clr-icon>
+      </button>
+      <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
+        <a href="javascript://" clrDropdownItem *ngFor="let language of settings.languages" (click)="changeLanguage(language)">
+          <clr-icon shape="circle" *ngIf="language != selectedLanguage"></clr-icon>
+          <clr-icon shape="check-circle" class="is-solid" *ngIf="language == selectedLanguage"></clr-icon>
+          {{language.name}}
+        </a>
+      </clr-dropdown-menu>
+    </clr-dropdown>
+    <a (click)="logout()" class="nav-link nav-icon" href="javascript://">
+      <clr-icon shape="lock"></clr-icon>
+    </a>
+  </div>
+</header>

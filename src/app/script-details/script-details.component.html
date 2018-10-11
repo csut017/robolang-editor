@@ -1,0 +1,34 @@
+<form clrForm>
+  <clr-input-container>
+    <label>Name</label>
+    <input clrInput placeholder="name" name="input" [(ngModel)]="currentScript.name" required />
+    <clr-control-error>This field is required!</clr-control-error>
+  </clr-input-container>
+  <clr-select-container>
+    <label>Category</label>
+    <select clrSelect name="category" [(ngModel)]="currentScript.category">
+      <option *ngFor="let category of categories" value="{{category.id}}">{{category.value}}</option>
+    </select>
+  </clr-select-container>
+  <clr-textarea-container>
+    <label>Description</label>
+    <textarea clrTextarea [(ngModel)]="currentScript.description" name="description"></textarea>
+  </clr-textarea-container>
+  <section class="form-block">
+    <div class="form-group">
+      <label>Options</label>
+      <div class="checkbox">
+        <input type="checkbox" id="isObsolete" name="isObsolete" [(ngModel)]="currentScript.isObsolete">
+        <label for="isObsolete">Obsolete</label>
+      </div>
+      <div class="checkbox">
+        <input type="checkbox" id="isInactive" name="isInactive" [(ngModel)]="currentScript.isInactive">
+        <label for="isInactive">Inactive</label>
+      </div>
+    </div>
+  </section>
+  <div>
+    <button class="btn btn-danger-outline pull-right" (click)="delete()" *ngIf="!currentScript.isAdding">Delete Script</button>
+    <button class="btn btn-primary" (click)="save()">Save Changes</button>
+  </div>
+</form>

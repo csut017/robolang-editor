@@ -1,0 +1,30 @@
+<form clrForm>
+  <clr-input-container>
+    <label>Name</label>
+    <input clrInput placeholder="name" name="input" [(ngModel)]="currentParameter.name" required />
+    <clr-control-error>This field is required!</clr-control-error>
+  </clr-input-container>
+  <clr-select-container>
+    <label>Data Type</label>
+    <select clrSelect name="dataType" [(ngModel)]="currentParameter.dataType">
+      <option *ngFor="let dateType of dataTypes" value="{{dateType.id}}">{{dateType.value}}</option>
+    </select>
+  </clr-select-container>
+  <section class="form-block">
+    <div class="form-group">
+      <label>Options</label>
+      <div class="checkbox">
+        <input type="checkbox" id="isRequired" name="isRequired" [(ngModel)]="currentParameter.isRequired">
+        <label for="isRequired">Required</label>
+      </div>
+      <div class="checkbox">
+        <input type="checkbox" id="isSplit" name="isSplit" [(ngModel)]="currentParameter.isSplit">
+        <label for="isSplit">Split</label>
+      </div>
+    </div>
+  </section>
+  <div>
+    <button class="btn btn-danger-outline pull-right" (click)="delete()">Delete Parameter</button>
+    <button class="btn btn-primary" (click)="save()">Save Changes</button>
+  </div>
+</form>

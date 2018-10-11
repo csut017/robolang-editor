@@ -1,1 +1,33 @@
-/* You can add global styles to this file, and also import other style files */
+.centre-block {
+  display: block;
+  text-align: center;
+  padding: 3em;
+}
+
+.clr-input:not([readonly]),
+input[type=date]:not([readonly]),
+input[type=datetime-local]:not([readonly]),
+input[type=email]:not([readonly]),
+input[type=number]:not([readonly]),
+input[type=password]:not([readonly]),
+input[type=tel]:not([readonly]),
+input[type=text]:not([readonly]),
+input[type=time]:not([readonly]),
+input[type=url]:not([readonly]),
+.clr-control-container textarea,
+.clr-form-horizontal.clr-row .clr-control-label {
+  width: 100%;
+}
+
+.clr-control-container {
+  width: 100%;
+}
+
+.pull-right {
+  float: right;
+}
+
+.script-editor {
+  height: calc(100vh - 250px);
+  margin-bottom: 10px;
+}
