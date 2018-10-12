@@ -1,18 +1,74 @@
 <form clrForm>
-  <div class="alert-validation">
-    <clr-alert [clrAlertClosable]="false" [clrAlertType]="status.type" (click)="moveToLine()">
-      <div clr-alert-item class="alert-item">
-        {{status.message}}
-      </div>
-    </clr-alert>
-  </div>
-
   <div class="clr-row">
     <div class="clr-col">
+      <div class="alert-validation">
+        <clr-alert [clrAlertClosable]="false" [clrAlertType]="status.type" (click)="moveToLine()">
+          <div clr-alert-item class="alert-item">
+            {{status.message}}
+          </div>
+        </clr-alert>
+      </div>
+
       <ace-editor [(text)]="currentScript.script" [options]="{maxLines: 'Infinity'}" theme="chrome" mode="python" style="min-height: calc(100vh - 268px);margin-bottom: 10px; width:100%;">
       </ace-editor>
     </div>
-    <div class="clr-col" *ngIf="status.showBreakdown">
+    <div class="clr-col-4">
+      <clr-tabs>
+        <clr-tab>
+          <button clrTabLink>Help</button>
+          <clr-tab-content *clrIfActive="true">
+            <div class="help-info">
+              <clr-vertical-nav>
+                <clr-vertical-nav-group *ngFor="let info of help">
+                  {{info.title}}
+                  <clr-vertical-nav-group-children>
+                    <div class="help-info-child">
+                      <div>
+                        {{info.description}}
+                      </div>
+                      <clr-stack-view *ngIf="info.hasArguments">
+                        <clr-stack-header>
+                          Arguments
+                        </clr-stack-header>
+                        <clr-stack-block *ngFor="let arg of info.arguments">
+                          <clr-stack-label>
+                            {{arg.name}}
+                            <clr-icon shape="flag" class="is-solid" *ngIf="arg.isRequired"></clr-icon>
+                          </clr-stack-label>
+                          <clr-stack-content>{{arg.type}}</clr-stack-content>
+                        </clr-stack-block>
+                      </clr-stack-view>
+                      <clr-stack-view *ngIf="info.hasChildren">
+                        <clr-stack-header>
+                          Children
+                        </clr-stack-header>
+                        <clr-stack-block *ngFor="let child of info.children">
+                          <clr-stack-label>{{child.name == '*' ? 'ANY' : child.name}}</clr-stack-label>
+                          <clr-stack-content>{{child.number}}</clr-stack-content>
+                        </clr-stack-block>
+                      </clr-stack-view>
+                      <clr-stack-view *ngIf="info.hasParents">
+                          <clr-stack-header>
+                            Parents
+                          </clr-stack-header>
+                          <clr-stack-block *ngFor="let parent of info.parents">
+                            <clr-stack-label>{{parent}}</clr-stack-label>
+                          </clr-stack-block>
+                        </clr-stack-view>
+                      </div>
+                  </clr-vertical-nav-group-children>
+                </clr-vertical-nav-group>
+              </clr-vertical-nav>
+            </div>
+          </clr-tab-content>
+        </clr-tab>
+        <clr-tab *ngIf="status.showBreakdown">
+          <button clrTabLink>Validation</button>
+          <clr-tab-content *clrIfActive>
+            TODO: show validation
+          </clr-tab-content>
+        </clr-tab>
+      </clr-tabs>
     </div>
   </div>
 

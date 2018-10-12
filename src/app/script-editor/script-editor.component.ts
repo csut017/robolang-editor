@@ -7,6 +7,7 @@ import "brace";
 import "brace/theme/chrome";
 import "../roboLang";
 import { AceEditorComponent } from 'ng2-ace-editor';
+import { HelpInfo, ScriptHelpService } from '../script-help.service';
 
 class statusInfo {
   type: string;
@@ -45,8 +46,10 @@ class statusInfo {
 })
 export class ScriptEditorComponent implements OnInit, OnChanges {
 
-  constructor(private validationService: ValidationService) { }
+  constructor(private validationService: ValidationService,
+    private scriptHelp: ScriptHelpService) { }
 
+  help: HelpInfo[];
   status: statusInfo;
   validation: ValidationResult;
   @Input() currentScript: Script;
@@ -56,6 +59,7 @@ export class ScriptEditorComponent implements OnInit, OnChanges {
   private lineNumber: number;
 
   ngOnInit() {
+    this.help = this.scriptHelp.getAll();
   }
 
   save(): void {

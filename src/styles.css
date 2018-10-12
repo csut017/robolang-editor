@@ -32,3 +32,17 @@ input[type=url]:not([readonly]),
   border-bottom-left-radius: 0 !important;
   border: none !important;
 }
+
+.help-info {
+  height: calc(100vh - 260px);
+  overflow-y: auto;
+}
+
+.help-info .clr-vertical-nav {
+  width: 100% !important;
+}
+
+.help-info-child {
+  padding: 0.5rem 1rem;
+  background-color: #ffffff;
+}
