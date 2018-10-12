@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, OnInit, Input, Output, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { Script } from '../script';
 import { ValidationService, ValidationResult } from '../validation.service';
 
@@ -6,10 +6,12 @@ import { ValidationService, ValidationResult } from '../validation.service';
 import "brace";
 import "brace/theme/chrome";
 import "../roboLang";
+import { AceEditorComponent } from 'ng2-ace-editor';
 
 class statusInfo {
   type: string;
   message: string;
+  showBreakdown: boolean;
 
   info(msg: string): statusInfo {
     this.type = '';
@@ -49,6 +51,7 @@ export class ScriptEditorComponent implements OnInit, OnChanges {
   validation: ValidationResult;
   @Input() currentScript: Script;
   @Output() saving = new EventEmitter<Script>();
+  @ViewChild(AceEditorComponent) editor: AceEditorComponent;
 
   private lineNumber: number;
 
@@ -72,14 +75,16 @@ export class ScriptEditorComponent implements OnInit, OnChanges {
       });
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(_: SimpleChanges) {
     this.status = new statusInfo().info('Script has not been validated');
   }
 
   moveToLine(lineNum?: number): void {
     lineNum = lineNum || this.lineNumber;
     if (lineNum) {
+      lineNum++;    // Lines are 1-based, the parser treats them as 0-based
       console.log(`Moving to line ${lineNum}`);
+      this.editor.getEditor().gotoLine(lineNum);
     }
   }
 }

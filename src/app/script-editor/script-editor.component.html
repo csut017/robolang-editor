@@ -7,8 +7,14 @@
     </clr-alert>
   </div>
 
-  <ace-editor [(text)]="currentScript.script" [options]="{maxLines: 'Infinity'}" theme="chrome" mode="python" style="min-height: calc(100vh - 268px);margin-bottom: 10px; width:100%;">
-  </ace-editor>
+  <div class="clr-row">
+    <div class="clr-col">
+      <ace-editor [(text)]="currentScript.script" [options]="{maxLines: 'Infinity'}" theme="chrome" mode="python" style="min-height: calc(100vh - 268px);margin-bottom: 10px; width:100%;">
+      </ace-editor>
+    </div>
+    <div class="clr-col" *ngIf="status.showBreakdown">
+    </div>
+  </div>
 
   <div>
     <button class="btn btn-success-outline pull-right" (click)="validate()">Validate Script</button>
