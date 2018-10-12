@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { HostListener, Component, OnInit } from '@angular/core';
 import { Script } from '../script';
 import { ScriptService } from '../script.service'
 import { ActivatedRoute } from '@angular/router';
@@ -49,6 +49,17 @@ export class ScriptsComponent implements OnInit {
       }
     });
     this.scriptView.changeView('details');
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent): void {
+    switch (event.key) {
+      case 's':
+        if (event.ctrlKey) {
+          if (this.currentScript) this.save(this.currentScript);
+          event.preventDefault();
+        }
+    }
   }
 
   ngOnInit() {
