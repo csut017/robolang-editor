@@ -10,10 +10,10 @@
       <option *ngFor="let resourceType of resourceTypes" value="{{resourceType.id}}">{{resourceType.value}}</option>
     </select>
   </clr-select-container>
-  <clr-textarea-container *ngIf="currentContent">
-    <label>Content</label>
-    <textarea clrTextarea [(ngModel)]="currentContent.resource" name="content"></textarea>
-  </clr-textarea-container>
+
+  <ace-editor [(text)]="currentContent.resource" [options]="{maxLines: 'Infinity'}" theme="chrome" mode="html" style="min-height: calc(100vh - 500px);margin-bottom: 10px; margin-top: 10px; width:100%;" *ngIf="currentContent">
+  </ace-editor>
+
   <div>
     <button class="btn btn-danger-outline pull-right" (click)="delete()">Delete Resource</button>
     <button class="btn btn-primary" (click)="save()">Save Changes</button>

@@ -6,6 +6,10 @@ import { ScriptValue, ScriptSettings } from '../script-value';
 import { ScriptViewService } from '../script-view.service';
 import { ScriptResourceService } from '../script-resource.service';
 
+// Import the theme and mode
+import "brace";
+import "brace/theme/chrome";
+
 @Component({
   selector: 'app-script-resource-details',
   templateUrl: './script-resource-details.component.html',
