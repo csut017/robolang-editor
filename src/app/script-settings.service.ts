@@ -79,7 +79,7 @@ export class ScriptSettingsService {
   }
 
   private log(message: string) {
-    this.messageService.add(`ScriptService: ${message}`);
+    this.messageService.add(`ScriptSettingsService: ${message}`);
   }
 
   private handleError<T>(operation = 'operation', result?: T) {

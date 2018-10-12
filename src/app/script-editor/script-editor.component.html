@@ -1,6 +1,13 @@
 <form clrForm>
+  <div class="alert-validation">
+    <clr-alert [clrAlertClosable]="false" [clrAlertType]="status.type" (click)="moveToLine()">
+      <div clr-alert-item class="alert-item">
+        {{status.message}}
+      </div>
+    </clr-alert>
+  </div>
 
-  <ace-editor [(text)]="currentScript.script" [options]="{maxLines: 'Infinity'}" theme="chrome" mode="python" style="min-height: calc(100vh - 250px);margin-bottom: 10px; width:100%;">
+  <ace-editor [(text)]="currentScript.script" [options]="{maxLines: 'Infinity'}" theme="chrome" mode="python" style="min-height: calc(100vh - 268px);margin-bottom: 10px; width:100%;">
   </ace-editor>
 
   <div>

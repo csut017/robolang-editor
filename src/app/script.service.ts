@@ -44,18 +44,6 @@ export class ScriptService {
     }
   }
 
-  validate(script: Script): Observable<any> {
-    const url = environment.baseURL + `robotScripts/compile`;
-    this.log(`Compiling script ${script.name}`);
-    return this.http.post(url, {
-      script: script.script
-    })
-      .pipe(
-        tap(_ => this.log(`Compiled script ${script.name}`)),
-        catchError(this.handleError<Script>(`validate id=${script.id}`))
-      );
-  }
-
   delete(script: Script): any {
     const url = environment.baseURL + `robotScripts/${script.id}`;
     this.log(`Deleting script with id of ${script.id}`);
