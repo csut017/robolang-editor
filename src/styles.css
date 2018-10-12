@@ -26,8 +26,3 @@ input[type=url]:not([readonly]),
 .pull-right {
   float: right;
 }
-
-.script-editor {
-  height: calc(100vh - 250px);
-  margin-bottom: 10px;
-}

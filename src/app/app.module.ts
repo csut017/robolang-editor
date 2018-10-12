@@ -19,6 +19,7 @@ import { ScriptParametersComponent } from './script-parameters/script-parameters
 import { ScriptResourcesComponent } from './script-resources/script-resources.component';
 import { ScriptResourceDetailsComponent } from './script-resource-details/script-resource-details.component';
 import { ScriptParameterDetailsComponent } from './script-parameter-details/script-parameter-details.component';
+import { AceEditorModule } from 'ng2-ace-editor';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { ScriptParameterDetailsComponent } from './script-parameter-details/scri
     ClrFormsNextModule,
     BrowserAnimationsModule,
     FormsModule,
+    AceEditorModule,
     AppRoutingModule
   ],
   providers: [

@@ -1,10 +1,10 @@
 <form clrForm>
-  <clr-textarea-container>
-    <textarea clrTextarea [(ngModel)]="currentScript.script" name="script" class="script-editor"></textarea>
-  </clr-textarea-container>
+
+  <ace-editor [(text)]="currentScript.script" [options]="{maxLines: 'Infinity'}" theme="chrome" mode="python" style="min-height: calc(100vh - 250px);margin-bottom: 10px; width:100%;">
+  </ace-editor>
 
   <div>
-      <button class="btn btn-success-outline pull-right" (click)="validate()">Validate Script</button>
-      <button class="btn btn-primary" (click)="save()">Save Changes</button>
-    </div>
+    <button class="btn btn-success-outline pull-right" (click)="validate()">Validate Script</button>
+    <button class="btn btn-primary" (click)="save()">Save Changes</button>
+  </div>
 </form>

@@ -2,6 +2,11 @@ import { Component, EventEmitter,OnInit, Input, Output } from '@angular/core';
 import { Script } from '../script';
 import { ScriptService } from '../script.service';
 
+// Import the theme and mode
+import "brace";
+import "brace/theme/chrome";
+import "../roboLang";
+
 @Component({
   selector: 'app-script-editor',
   templateUrl: './script-editor.component.html',
