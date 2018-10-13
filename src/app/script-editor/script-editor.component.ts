@@ -69,6 +69,8 @@ export class ScriptEditorComponent implements OnInit, OnChanges {
   validate(): void {
     this.validationService.validate(this.currentScript)
       .subscribe(result => {
+        this.status.showBreakdown = !result.error;
+        this.validation = result;
         if (result.error) {
           this.status.error(result.error.message);
           this.lineNumber = result.error.lineNum;
@@ -84,8 +86,8 @@ export class ScriptEditorComponent implements OnInit, OnChanges {
   }
 
   moveToLine(lineNum?: number): void {
-    lineNum = lineNum || this.lineNumber;
-    if (lineNum) {
+    lineNum = lineNum == 0 ? 0 : (lineNum || this.lineNumber);
+    if (lineNum || (lineNum == 0)) {
       lineNum++;    // Lines are 1-based, the parser treats them as 0-based
       console.log(`Moving to line ${lineNum}`);
       this.editor.getEditor().gotoLine(lineNum);
