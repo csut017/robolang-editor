@@ -33,6 +33,11 @@ input[type=url]:not([readonly]),
   border: none !important;
 }
 
+.script-items {
+  height: calc(100vh - 160px);
+  overflow-y: auto;
+}
+
 .help-info {
   height: calc(100vh - 260px);
   overflow-y: auto;

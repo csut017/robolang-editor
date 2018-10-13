@@ -27,48 +27,50 @@
       <div *ngIf="currentScript">
         <div class="clr-row">
           <div class="clr-col-2">
-            <clr-tree-node>
-              <button class="clr-treenode-link" [class.active]="view.currentView=='details'" (click)="scriptView.changeView('details')">
-                <clr-icon shape="scroll"></clr-icon>
-                Details
-              </button>
-            </clr-tree-node>
-            <clr-tree-node>
-              <button class="clr-treenode-link" [class.active]="view.currentView=='script'" (click)="scriptView.changeView('script')">
-                <clr-icon shape="note"></clr-icon>
-                Script
-              </button>
-            </clr-tree-node>
-            <clr-tree-node *ngIf="!currentScript.isAdding">
-              <button class="clr-treenode-link" [class.active]="view.currentView=='parameters'" (click)="scriptView.changeView('parameters')">
-                <clr-icon shape="view-list"></clr-icon>
-                Parameters
-              </button>
-              <ng-template [clrIfExpanded]="true">
-                <clr-tree-node *ngFor="let param of currentScript.parameters">
-                  <button (click)="openParameter(param)" class="clr-treenode-link" [class.active]="view.currentView=='parameter' && currentParameter == param">
-                    <clr-icon shape="minus"></clr-icon>
-                    {{param.name}}
-                    <span class="badge badge-success" *ngIf="param.isRequired">Required</span>
-                  </button>
-                </clr-tree-node>
-              </ng-template>
-            </clr-tree-node>
-            <clr-tree-node *ngIf="!currentScript.isAdding">
-              <button class="clr-treenode-link" [class.active]="view.currentView=='resources'" (click)="scriptView.changeView('resources')">
-                <clr-icon shape="file-group"></clr-icon>
-                Resources
-              </button>
-              <ng-template [clrIfExpanded]="true">
-                <clr-tree-node *ngFor="let resource of currentScript.resources">
-                  <button (click)="openResource(resource)" class="clr-treenode-link" [class.active]="view.currentView=='resource' && currentResource == resource">
-                    <clr-icon shape="file"></clr-icon>
-                    {{resource.name}} 
-                    <span class="badge">{{resource.resourceTypeName}}</span>
-                  </button>
-                </clr-tree-node>
-              </ng-template>
-            </clr-tree-node>
+            <div class="script-items">
+              <clr-tree-node>
+                <button class="clr-treenode-link" [class.active]="view.currentView=='details'" (click)="scriptView.changeView('details')">
+                  <clr-icon shape="scroll"></clr-icon>
+                  Details
+                </button>
+              </clr-tree-node>
+              <clr-tree-node>
+                <button class="clr-treenode-link" [class.active]="view.currentView=='script'" (click)="scriptView.changeView('script')">
+                  <clr-icon shape="note"></clr-icon>
+                  Script
+                </button>
+              </clr-tree-node>
+              <clr-tree-node *ngIf="!currentScript.isAdding">
+                <button class="clr-treenode-link" [class.active]="view.currentView=='parameters'" (click)="scriptView.changeView('parameters')">
+                  <clr-icon shape="view-list"></clr-icon>
+                  Parameters
+                </button>
+                <ng-template [clrIfExpanded]="true">
+                  <clr-tree-node *ngFor="let param of currentScript.parameters">
+                    <button (click)="openParameter(param)" class="clr-treenode-link" [class.active]="view.currentView=='parameter' && currentParameter == param">
+                      <clr-icon shape="minus"></clr-icon>
+                      {{param.name}}
+                      <span class="badge badge-success" *ngIf="param.isRequired">Required</span>
+                    </button>
+                  </clr-tree-node>
+                </ng-template>
+              </clr-tree-node>
+              <clr-tree-node *ngIf="!currentScript.isAdding">
+                <button class="clr-treenode-link" [class.active]="view.currentView=='resources'" (click)="scriptView.changeView('resources')">
+                  <clr-icon shape="file-group"></clr-icon>
+                  Resources
+                </button>
+                <ng-template [clrIfExpanded]="true">
+                  <clr-tree-node *ngFor="let resource of currentScript.resources">
+                    <button (click)="openResource(resource)" class="clr-treenode-link" [class.active]="view.currentView=='resource' && currentResource == resource">
+                      <clr-icon shape="file"></clr-icon>
+                      {{resource.name}}
+                      <span class="badge">{{resource.resourceTypeName}}</span>
+                    </button>
+                  </clr-tree-node>
+                </ng-template>
+              </clr-tree-node>
+            </div>
           </div>
           <div class="clr-col">
             <div *ngIf="isLoading">

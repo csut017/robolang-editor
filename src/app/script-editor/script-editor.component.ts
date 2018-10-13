@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Input, Output, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Input, Output, OnChanges, SimpleChanges, ViewChild, HostListener } from '@angular/core';
 import { Script } from '../script';
 import { ValidationService, ValidationResult } from '../validation.service';
 
@@ -52,14 +52,27 @@ export class ScriptEditorComponent implements OnInit, OnChanges {
   help: HelpInfo[];
   status: statusInfo;
   validation: ValidationResult;
+  editorOptions: any;
   @Input() currentScript: Script;
   @Output() saving = new EventEmitter<Script>();
   @ViewChild(AceEditorComponent) editor: AceEditorComponent;
 
   private lineNumber: number;
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    var lines = (event.target.innerHeight - 370) / 12;
+    this.editorOptions = {
+      maxLines: lines,
+      scrollPastEnd: 0.5
+    };
+  }
+
   ngOnInit() {
     this.help = this.scriptHelp.getAll();
+    this.onResize({
+      target: window
+    });
   }
 
   save(): void {
