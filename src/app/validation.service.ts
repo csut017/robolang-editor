@@ -12,8 +12,8 @@ export class ValidationResult {
 
   // Information
   functionCalls: Information<ASTToken>[];
-  functionDefinitions: ASTNode[];
-  variables: ASTToken[];
+  functionDefinitions: ASTToken[];
+  references: Information<ASTToken>[];
 }
 
 export class ASTNode {
@@ -82,34 +82,74 @@ export class ValidationService {
   generateInformation(result: ValidationResult): ValidationResult {
     result.functionCalls = [];
     result.functionDefinitions = [];
-    result.variables = [];
+    result.references = [];
     var functions = [];
-    if (result.ast) result.ast.forEach(node => this.informationWalk(node, result, functions));
+    var references = [];
+    (result.ast || []).forEach(node => this.informationWalk(node, result, functions, references));
 
-    var functionMap: { [index: string] : Information<ASTToken>} = {};
-    functions.forEach(func => {
-      var current = functionMap[func.value];
-      if (!current) {
-        current = new Information<ASTToken>(func.value);
-        functionMap[func.value] = current;
-      }
-      current.items.push(func);
-    });
-
-    for (var prop in functionMap) {
-      if (functionMap.hasOwnProperty(prop)) {
-        result.functionCalls.push(functionMap[prop]);
-      }
-    }
-
-    result.functionCalls.sort((a, b) => a.name == b.name ? 0 : (a.name > b.name ? 1 : -1));
+    result.functionCalls = this.consolidateInformation(functions);
+    result.functionDefinitions.sort((a, b) => a.value == b.value ? 0 : (a.value > b.value ? 1 : -1))
+    result.references = this.consolidateInformation(references);
 
     return result;
   }
 
-  private informationWalk(node: ASTNode, result: ValidationResult, functions: ASTToken[]): void {
-    if (node.type == 'Function') functions.push(node.token);
-    if (node.children) node.children.forEach(child => this.informationWalk(child, result, functions));
+  private consolidateInformation(tokens: ASTToken[]): Information<ASTToken>[] {
+    var output = [];
+    var outputMap: { [index: string]: Information<ASTToken> } = {};
+    tokens.forEach(func => {
+      var current = outputMap[func.value];
+      if (!current) {
+        current = new Information<ASTToken>(func.value);
+        outputMap[func.value] = current;
+      }
+      current.items.push(func);
+    });
+
+    for (var prop in outputMap) {
+      if (outputMap.hasOwnProperty(prop)) {
+        var info = outputMap[prop];
+        info.items.sort((a, b) => a.lineNum == b.lineNum ? 0 :(a.lineNum > b.lineNum ? 1 : -1));
+        output.push(info);
+      }
+    }
+
+    output.sort((a, b) => a.name == b.name ? 0 : (a.name > b.name ? 1 : -1));
+    return output;
+  }
+
+  private addNamedToken(node: ASTNode, output: ASTToken[]) {
+    var tok = new ASTToken();
+    const nameToken = this.findArg(node, 'name');
+    if (nameToken) {
+      tok.value = nameToken.value;
+      tok.lineNum = node.token.lineNum;
+      tok.linePos = node.token.linePos;
+      output.push(tok);
+    }
+  }
+
+  private informationWalk(node: ASTNode, result: ValidationResult, functions: ASTToken[], references: ASTToken[]): void {
+    if (node.type == 'Function') {
+      functions.push(node.token);
+      if (node.token.value == 'function') {
+        this.addNamedToken(node, result.functionDefinitions);
+      }
+    } else if (node.type == 'Reference') {
+      references.push(node.token);
+    }
+
+    (node.children || []).forEach(child => this.informationWalk(child, result, functions, references));
+    (node.args || []).forEach(arg => (arg.children || []).forEach(child => this.informationWalk(child, result, functions, references)))
+  }
+
+  private findArg(node: ASTNode, name: string): ASTToken {
+    var argNode = (node.args || []).find(arg => arg.token.value == name);
+    if (argNode && argNode.children && argNode.children.length) {
+      return argNode.children[0].token;
+    }
+
+    return;
   }
 
   private log(message: string) {

@@ -71,32 +71,56 @@
         <clr-tab *ngIf="status.showBreakdown">
           <button clrTabLink>Information</button>
           <clr-tab-content *clrIfActive>
-            <clr-tree-node>
-              <clr-icon shape="arrow left"></clr-icon>
-              Function Calls
-              <ng-template [clrIfExpanded]="true">
-                <clr-tree-node *ngFor="let call of validation.functionCalls">
-                  <clr-icon shape="arrow left" class="is-highlight"></clr-icon>
-                  {{call.name}}
-                  ({{call.items.length}})
-                  <ng-template [clrIfExpanded]="false">
-                    <clr-tree-node *ngFor="let item of call.items">
-                      <button class="clr-treenode-link" (click)="moveToLine(item.lineNum)">
-                        Line {{item.lineNum + 1}}, position {{item.linePos + 1}}
-                      </button>
-                    </clr-tree-node>
-                  </ng-template>
-                </clr-tree-node>
-              </ng-template>
-            </clr-tree-node>
-            <clr-tree-node>
-              <clr-icon shape="logout" flip="horizontal"></clr-icon>
-              Function Definitions
-            </clr-tree-node>
-            <clr-tree-node>
-              <clr-icon shape="minus-circle"></clr-icon>
-              Variables
-            </clr-tree-node>
+            <div class="breakdown-info">
+              <clr-tree-node>
+                <clr-icon shape="arrow left"></clr-icon>
+                Function Calls
+                <ng-template [clrIfExpanded]="true">
+                  <clr-tree-node *ngFor="let call of validation.functionCalls">
+                    <clr-icon shape="arrow left" class="is-highlight"></clr-icon>
+                    {{call.name}}
+                    ({{call.items.length}})
+                    <ng-template [clrIfExpanded]="false">
+                      <clr-tree-node *ngFor="let item of call.items">
+                        <button class="clr-treenode-link" (click)="moveToLine(item.lineNum)">
+                          Line {{item.lineNum + 1}}, position {{item.linePos + 1}}
+                        </button>
+                      </clr-tree-node>
+                    </ng-template>
+                  </clr-tree-node>
+                </ng-template>
+              </clr-tree-node>
+              <clr-tree-node>
+                <clr-icon shape="logout" flip="horizontal"></clr-icon>
+                Function Definitions
+                <ng-template [clrIfExpanded]="true">
+                  <clr-tree-node *ngFor="let func of validation.functionDefinitions">
+                    <clr-icon shape="logout" flip="horizontal" class="is-highlight"></clr-icon>
+                    <button class="clr-treenode-link" (click)="moveToLine(func.lineNum)">
+                      {{func.value}}
+                    </button>
+                  </clr-tree-node>
+                </ng-template>
+              </clr-tree-node>
+              <clr-tree-node>
+                <clr-icon shape="filter-grid-circle"></clr-icon>
+                References
+                <ng-template [clrIfExpanded]="true">
+                  <clr-tree-node *ngFor="let call of validation.references">
+                    <clr-icon shape="filter-grid-circle" class="is-highlight"></clr-icon>
+                    {{call.name}}
+                    ({{call.items.length}})
+                    <ng-template [clrIfExpanded]="false">
+                      <clr-tree-node *ngFor="let item of call.items">
+                        <button class="clr-treenode-link" (click)="moveToLine(item.lineNum)">
+                          Line {{item.lineNum + 1}}, position {{item.linePos + 1}}
+                        </button>
+                      </clr-tree-node>
+                    </ng-template>
+                  </clr-tree-node>
+                </ng-template>
+              </clr-tree-node>
+            </div>
           </clr-tab-content>
         </clr-tab>
       </clr-tabs>

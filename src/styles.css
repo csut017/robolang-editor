@@ -38,7 +38,7 @@ input[type=url]:not([readonly]),
   overflow-y: auto;
 }
 
-.help-info {
+.help-info, .breakdown-info {
   height: calc(100vh - 260px);
   overflow-y: auto;
 }
