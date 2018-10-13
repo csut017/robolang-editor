@@ -8,6 +8,8 @@ import "brace/theme/chrome";
 import "../roboLang";
 import { AceEditorComponent } from 'ng2-ace-editor';
 import { HelpInfo, ScriptHelpService } from '../script-help.service';
+import { Observable } from 'rxjs';
+import { throttleTime, debounceTime, tap } from 'rxjs/operators';
 
 class statusInfo {
   type: string;
@@ -73,6 +75,10 @@ export class ScriptEditorComponent implements OnInit, OnChanges {
     this.onResize({
       target: window
     });
+    this.editor.textChanged.pipe(
+      tap(_ => this.status.info('Script has not been validated')),
+      debounceTime(1500)
+    ).subscribe(_ => this.validate());
   }
 
   save(): void {
@@ -96,6 +102,8 @@ export class ScriptEditorComponent implements OnInit, OnChanges {
 
   ngOnChanges(_: SimpleChanges) {
     this.status = new statusInfo().info('Script has not been validated');
+    setTimeout(_ => this.validate(), 100);
+    this.status.showBreakdown = false;
   }
 
   moveToLine(lineNum?: number): void {
