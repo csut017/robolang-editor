@@ -93,7 +93,7 @@ export class ScriptHelpService {
       new HelpInfo('after', 'Performs the children after a set number of repetitions')
         .addArgument('repetitions', ArgumentType.Number, true)
         .addChild('*', ChildNumber.OneOrMore)
-        .addParent('wait'),
+        .addParent('repeat'),
       new HelpInfo('arrived', 'Performs the children when the robot has arrived at the location')
         .addArgument('location', ArgumentType.String)
         .addChild('*', ChildNumber.OneOrMore)
@@ -114,7 +114,7 @@ export class ScriptHelpService {
         .addParent('wait'),
       new HelpInfo('doNothing', 'Does nothing'),
       new HelpInfo('equal', 'Checks if the condition matches the input.')
-        .addArgument('variable', ArgumentType.Any, true)
+        .addArgument('condition', ArgumentType.Any, true)
         .addChild('*', ChildNumber.OneOrMore)
         .addParent('switch'),
       new HelpInfo('forEach', 'Iterates over a list and executes the children for each item.')
@@ -125,11 +125,11 @@ export class ScriptHelpService {
         .addArgument('name', ArgumentType.String, true)
         .addChild('*', ChildNumber.OneOrMore),
       new HelpInfo('greater', 'Checks if the condition is greater than the input.')
-        .addArgument('variable', ArgumentType.Any, true)
+        .addArgument('condition', ArgumentType.Any, true)
         .addChild('*', ChildNumber.OneOrMore)
         .addParent('switch'),
       new HelpInfo('less', 'Checks if the condition is less than the the input.')
-        .addArgument('variable', ArgumentType.Any, true)
+        .addArgument('condition', ArgumentType.Any, true)
         .addChild('*', ChildNumber.OneOrMore)
         .addParent('switch'),
       new HelpInfo('lookAtPerson', 'Looks at a person.')
@@ -154,7 +154,8 @@ export class ScriptHelpService {
         .addArgument('event', ArgumentType.String, true)
         .addArgument('status', ArgumentType.String)
         .addArgument('value', ArgumentType.Any),
-      new HelpInfo('repeat', 'Repeats the current block.'),
+      new HelpInfo('repeat', 'Repeats the current block.')
+        .addChild('after', ChildNumber.ZeroOrMore),
       new HelpInfo('reschedule', 'Reschedules the script after time has elapsed.')
         .addArgument('time', ArgumentType.Time, true),
       new HelpInfo('response', 'Checks the user input to match a value.')
@@ -166,6 +167,7 @@ export class ScriptHelpService {
         .addArgument('pattern', ArgumentType.String)
         .addArgument('wait', ArgumentType.Boolean),
       new HelpInfo('select', 'Selects an item from a set of options.')
+        .addArgument('variable', ArgumentType.Variable)
         .addArgument('from', ArgumentType.Any, true),
       new HelpInfo('showScreen', 'Displays a screen.')
         .addArgument('screen', ArgumentType.String, true),
@@ -187,12 +189,10 @@ export class ScriptHelpService {
         .addArgument('timeout', ArgumentType.Time)
         .addArgument('priority', ArgumentType.Number)
         .addChild('response', ChildNumber.ZeroOrMore)
-        .addChild('after', ChildNumber.ZeroOrMore)
         .addChild('default', ChildNumber.OneOrZero)
         .addChild('timeout', ChildNumber.OneOrZero),
       new HelpInfo('waitFor', 'Waits for a period of time and then performs the children.')
         .addArgument('time', ArgumentType.Time, true)
-        .addChild('*', ChildNumber.OneOrMore)
     ];
     this.help.sort((a, b) => a.title == b.title ? 0 : (a.title > b.title ? 1 : -1));
   }

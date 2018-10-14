@@ -188,7 +188,7 @@ export class ValidationService {
       if (item.requireChildren && !(node.children && node.children.length)) {
         result.issues.push(ParseError.FromToken(`'${funcName}' requires at least one child`, node.token));
       }
-      if (fixed) {
+      if (fixed && node.children && node.children.length) {
         node.children.forEach(c => {
           const childName = c.token.value;
           if (!item.children.find(ic => ic.name == childName)) {
