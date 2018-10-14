@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 export class HelpInfo {
   title: string;
   description: string;
+  requireChildren: boolean;
   arguments: FunctionArgument[] = [];
   children: FunctionChild[] = [];
   parents: string[] = [];
@@ -10,9 +11,10 @@ export class HelpInfo {
   hasChildren: boolean = false;
   hasParents: boolean = false;
 
-  constructor(title: string, desc: string) {
+  constructor(title: string, desc: string, requireChildren?: boolean) {
     this.title = title;
     this.description = desc;
+    this.requireChildren = !!requireChildren;
   }
 
   addArgument(name: string, type: string, required?: boolean): HelpInfo {
@@ -67,7 +69,6 @@ const ArgumentType = {
   Any: 'ANY' as 'ANY'
 }
 type ArgumentType = (typeof ArgumentType)[keyof typeof ArgumentType];
-
 
 const ChildNumber = {
   One: '1' as '1',
@@ -168,7 +169,7 @@ export class ScriptHelpService {
         .addArgument('from', ArgumentType.Any, true),
       new HelpInfo('showScreen', 'Displays a screen.')
         .addArgument('screen', ArgumentType.String, true),
-      new HelpInfo('switch', 'Chooses between one or more items')
+      new HelpInfo('switch', 'Chooses between one or more items', true)
         .addArgument('value', ArgumentType.Any, true)
         .addChild('default', ChildNumber.OneOrZero)
         .addChild('equal', ChildNumber.ZeroOrMore)
@@ -182,11 +183,11 @@ export class ScriptHelpService {
         .addArgument('value', ArgumentType.Any)
         .addArgument('server', ArgumentType.Boolean)
         .addArgument('default', ArgumentType.Any),
-      new HelpInfo('wait', 'Waits for user input or a timeout.')
+      new HelpInfo('wait', 'Waits for user input or a timeout.', true)
         .addArgument('timeout', ArgumentType.Time)
         .addArgument('priority', ArgumentType.Number)
         .addChild('response', ChildNumber.ZeroOrMore)
-        .addChild('after', ChildNumber.OneOrZero)
+        .addChild('after', ChildNumber.ZeroOrMore)
         .addChild('default', ChildNumber.OneOrZero)
         .addChild('timeout', ChildNumber.OneOrZero),
       new HelpInfo('waitFor', 'Waits for a period of time and then performs the children.')

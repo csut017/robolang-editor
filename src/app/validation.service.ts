@@ -3,9 +3,9 @@ import { MessageService } from './message.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment'
 import { Observable, of } from 'rxjs';
-import { catchError, map, tap, mergeMap, concatMap } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { Script } from './script';
-import { ScriptHelpService, HelpInfo, FunctionArgument } from './script-help.service';
+import { ScriptHelpService, HelpInfo, FunctionArgument, FunctionChild } from './script-help.service';
 
 export class ValidationResult {
   ast: ASTNode[];
@@ -57,6 +57,15 @@ export class Information<T> {
     this.items = [];
   }
 }
+
+// This is copied from script-help.service - not sure how to import it
+const ChildNumber = {
+  One: '1' as '1',
+  OneOrZero: '0..1' as '0..1',
+  OneOrMore: '1..*' as '1..*',
+  ZeroOrMore: '0..*' as '0..*',
+}
+type ChildNumber = (typeof ChildNumber)[keyof typeof ChildNumber];
 
 @Injectable({
   providedIn: 'root'
@@ -160,6 +169,65 @@ export class ValidationService {
         result.issues.push(ParseError.FromToken(`Unknown argument '${key}' found for '${funcName}'`, node.token));
       }
     });
+
+    if (item.hasParents) {
+      var isValid = !!parent;
+      if (isValid) {
+        const parentName = parent.token.value;
+        isValid = !!item.parents.find(p => p == parentName);
+      }
+
+      if (!isValid) {
+        const parentNames = item.parents.map(p => `'${p}'`).join(' or ');
+        result.issues.push(ParseError.FromToken(`'${funcName}' must be a child of ${parentNames}`, node.token));
+      }
+    }
+
+    if (item.hasChildren) {
+      const fixed = item.children.filter(child => this.checkASTNodeChild(result, node, funcName, child)).length == 0;
+      if (item.requireChildren && !(node.children && node.children.length)) {
+        result.issues.push(ParseError.FromToken(`'${funcName}' requires at least one child`, node.token));
+      }
+      if (fixed) {
+        node.children.forEach(c => {
+          const childName = c.token.value;
+          if (!item.children.find(ic => ic.name == childName)) {
+            result.issues.push(ParseError.FromToken(`Unexpected '${childName}' in ${funcName}'`, node.token));
+          }
+        });
+      }
+    } else {
+      if (node.children && node.children.length) {
+        result.issues.push(ParseError.FromToken(`'${funcName}' does not allow children`, node.token));
+      }
+    }
+  }
+
+  private checkASTNodeChild(result: ValidationResult, node: ASTNode, funcName: string, child: FunctionChild): boolean {
+    const childName = child.name == '*' ? 'child' : `'${child.name}' child`;
+    var children = node.children || [];
+    if (child.name != '*') children = children.filter(c => c.token.value == child.name);
+    const childCount = children.length;
+    switch (child.number) {
+      case ChildNumber.One:
+        if (childCount != 1) {
+          result.issues.push(ParseError.FromToken(`'${funcName}' expects one and only one ${childName}`, node.token));
+        }
+        break;
+
+      case ChildNumber.OneOrZero:
+        if (childCount > 1) {
+          result.issues.push(ParseError.FromToken(`'${funcName}' expects only one ${childName}`, node.token));
+        }
+        break;
+
+      case ChildNumber.OneOrMore:
+        if (childCount < 1) {
+          result.issues.push(ParseError.FromToken(`'${funcName}' expects at least one ${childName}`, node.token));
+        }
+        break;
+    }
+    return child.name == '*';
   }
 
   private checkASTNodeArg(result: ValidationResult, node: ASTNode, funcName: string, arg: FunctionArgument): string {
