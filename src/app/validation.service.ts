@@ -5,6 +5,7 @@ import { environment } from '../environments/environment'
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap, mergeMap, concatMap } from 'rxjs/operators';
 import { Script } from './script';
+import { ScriptHelpService, HelpInfo, FunctionArgument } from './script-help.service';
 
 export class ValidationResult {
   ast: ASTNode[];
@@ -14,6 +15,9 @@ export class ValidationResult {
   functionCalls: Information<ASTToken>[];
   functionDefinitions: ASTToken[];
   references: Information<ASTToken>[];
+
+  // Validation
+  issues: ParseError[];
 }
 
 export class ASTNode {
@@ -34,6 +38,14 @@ export class ParseError {
   message: string;
   linePos: number;
   lineNum: number;
+
+  static FromToken(msg: string, token: ASTToken): ParseError {
+    var err = new ParseError();
+    err.message = msg;
+    err.lineNum = token.lineNum;
+    err.linePos = token.linePos;
+    return err;
+  }
 }
 
 export class Information<T> {
@@ -52,12 +64,18 @@ export class Information<T> {
 export class ValidationService {
 
   constructor(private http: HttpClient,
-    private messageService: MessageService) { }
+    private messageService: MessageService,
+    private scriptHelp: ScriptHelpService) {
+    const help = this.scriptHelp.getAll();
+    help.forEach(item => this.helpMap[item.title] = item);
+  }
+
+  private helpMap: { [index: string]: HelpInfo } = {};
 
   validate(script: Script): Observable<ValidationResult> {
     return this.compile(script)
       .pipe(
-        map(res => this.generateInformation(res))
+        map(res => this.checkAST(this.generateInformation(res)))
       );
   }
 
@@ -94,6 +112,68 @@ export class ValidationService {
     return result;
   }
 
+  checkAST(result: ValidationResult): ValidationResult {
+    result.issues = [];
+    result.ast.forEach(node => this.checkASTNode(result, node));
+    return result;
+  }
+
+  private checkASTNode(result: ValidationResult, node: ASTNode, parent?: ASTNode) {
+    if (node.type == 'Function') {
+      this.checkASTFunctionNode(result, node, parent);
+      (node.children || []).forEach(child => this.checkASTNode(result, child, node));
+    }
+  }
+
+  private checkASTFunctionNode(result: ValidationResult, node: ASTNode, parent: ASTNode) {
+    const funcName = node.token.value;
+    const item = this.helpMap[funcName];
+    if (!item) {
+      if ((result.functionDefinitions || []).find(func => func.value == funcName)) {
+        // Don't do any validations on custom functions (yet) - we don't know what arguments they expect
+        return;
+      }
+      result.issues.push(ParseError.FromToken(`Unknown function '${funcName}'`, node.token));
+      return;
+    }
+
+    var argMap: { [index: string]: number } = {};
+    (node.args || []).forEach(arg => argMap[arg.token.value] = (argMap[arg.token.value] || 0) + 1);
+    var argKeys: string[] = [];
+    for (var prop in argMap) {
+      if (argMap.hasOwnProperty(prop)) {
+        argKeys.push(prop);
+      }
+    }
+    argKeys.forEach(key => {
+      const count = argMap[key];
+      if (count > 1) {
+        result.issues.push(ParseError.FromToken(`Duplicate argument '${key}' found for '${funcName}'`, node.token));
+      }
+    });
+
+    var checked = (item.arguments || []).map(arg => this.checkASTNodeArg(result, node, funcName, arg));
+    checked.forEach(arg => argMap[arg] = 0);
+    argKeys.forEach(key => {
+      const count = argMap[key];
+      if (count > 0) {
+        result.issues.push(ParseError.FromToken(`Unknown argument '${key}' found for '${funcName}'`, node.token));
+      }
+    });
+  }
+
+  private checkASTNodeArg(result: ValidationResult, node: ASTNode, funcName: string, arg: FunctionArgument): string {
+    const existing = (node.args || []).find(n => n.token.value == arg.name);
+    if (arg.isRequired) {
+      if (!existing) {
+        result.issues.push(ParseError.FromToken(`Missing required argument '${arg.name}' for '${funcName}'`, node.token));
+        return;
+      }
+    }
+
+    return arg.name;
+  }
+
   private consolidateInformation(tokens: ASTToken[]): Information<ASTToken>[] {
     var output = [];
     var outputMap: { [index: string]: Information<ASTToken> } = {};
@@ -109,7 +189,7 @@ export class ValidationService {
     for (var prop in outputMap) {
       if (outputMap.hasOwnProperty(prop)) {
         var info = outputMap[prop];
-        info.items.sort((a, b) => a.lineNum == b.lineNum ? 0 :(a.lineNum > b.lineNum ? 1 : -1));
+        info.items.sort((a, b) => a.lineNum == b.lineNum ? 0 : (a.lineNum > b.lineNum ? 1 : -1));
         output.push(info);
       }
     }

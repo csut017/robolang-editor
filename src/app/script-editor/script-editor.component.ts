@@ -8,19 +8,12 @@ import "brace/theme/chrome";
 import "../roboLang";
 import { AceEditorComponent } from 'ng2-ace-editor';
 import { HelpInfo, ScriptHelpService } from '../script-help.service';
-import { Observable } from 'rxjs';
-import { throttleTime, debounceTime, tap } from 'rxjs/operators';
+import { debounceTime, tap } from 'rxjs/operators';
 
 class statusInfo {
   type: string;
   message: string;
   showBreakdown: boolean;
-
-  info(msg: string): statusInfo {
-    this.type = '';
-    this.message = msg;
-    return this;
-  }
 
   success(msg: string): statusInfo {
     this.type = 'alert-success';
@@ -76,9 +69,13 @@ export class ScriptEditorComponent implements OnInit, OnChanges {
       target: window
     });
     this.editor.textChanged.pipe(
-      tap(_ => this.status.info('Script has not been validated')),
+      tap(_ => this.status.warning('Script has not been validated')),
       debounceTime(1500)
     ).subscribe(_ => this.validate());
+    const selection = this.editor.getEditor().getSelection();
+    selection.on('changeSelection', _ => {
+      console.log(selection); // TODO: Display context sensitive help
+    });
   }
 
   save(): void {
@@ -101,7 +98,7 @@ export class ScriptEditorComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(_: SimpleChanges) {
-    this.status = new statusInfo().info('Script has not been validated');
+    this.status = new statusInfo().warning('Script has not been validated');
     setTimeout(_ => this.validate(), 100);
     this.status.showBreakdown = false;
   }

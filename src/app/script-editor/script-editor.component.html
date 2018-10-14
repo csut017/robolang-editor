@@ -63,9 +63,29 @@
           </clr-tab-content>
         </clr-tab>
         <clr-tab *ngIf="status.showBreakdown">
-          <button clrTabLink>Validation</button>
+          <button clrTabLink>
+            Validation
+            <span class="badge badge-danger" *ngIf="validation.issues && validation.issues.length">
+              {{validation.issues.length > 9 ? '9+' : validation.issues.length}}
+            </span>
+          </button>
           <clr-tab-content *clrIfActive>
-            TODO: show validation
+            <div *ngIf="validation.issues && validation.issues.length">
+              <clr-tree-node *ngFor="let item of validation.issues">
+                <button class="clr-treenode-link" (click)="moveToLine(item.lineNum)">
+                    <clr-icon shape="exclamation-circle"></clr-icon>
+                    {{item.message}}
+                </button>
+              </clr-tree-node>
+            </div>
+            <div *ngIf="!(validation.issues && validation.issues.length)">
+              <clr-tree-node>
+                <button class="clr-treenode-link">
+                  <clr-icon shape="check-circle" class="is-success"></clr-icon>
+                  No issues found
+                </button>
+              </clr-tree-node>
+            </div>
           </clr-tab-content>
         </clr-tab>
         <clr-tab *ngIf="status.showBreakdown">
