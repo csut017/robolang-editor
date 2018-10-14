@@ -136,7 +136,7 @@ export class ScriptHelpService {
         .addArgument('person', ArgumentType.String)
         .addArgument('track', ArgumentType.Boolean),
       new HelpInfo('loop', 'Performs the children a set number of times.')
-        .addArgument('iterations', ArgumentType.Number, true)
+        .addArgument('iterations', ArgumentType.Number)
         .addChild('*', ChildNumber.OneOrMore),
       new HelpInfo('moveTo', 'Moves to a location.')
         .addArgument('location', ArgumentType.String, true)
