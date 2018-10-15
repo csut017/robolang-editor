@@ -27,16 +27,22 @@ export class ScriptService {
   }
 
   getScript(id: number): Observable<Script> {
-    const url = environment.baseURL + `robotScripts/${id}`;
+    const url = environment.baseURL + `robotScripts/v2/${id}`;
     this.log(`Fetching script with id of ${id}`);
-    return this.http.get<Script>(url)
+    return this.http.get<any>(url)
       .pipe(
         tap(_ => this.log(`Fetched script with id of ${id}`)),
-        catchError(this.handleError<Script>(`getScript id=${id}`))
+        catchError(this.handleError<Script>(`getScript id=${id}`)),
+        map(resp => {
+          var script = resp.data;
+          script.versions = resp.items || [];
+          return script;
+        })
       );
   }
 
   save(script: Script): Observable<any> {
+    script.format = 2;
     if (script.id) {
       return this.update(script);
     } else {
@@ -51,6 +57,23 @@ export class ScriptService {
       .pipe(
         tap(_ => this.log(`Deleted script with id of ${script.id}`)),
         catchError(this.returnError(`delete id=${script.id}`))
+      );
+  }
+
+  generateVersion(script: Script, description: string): Observable<any> {
+    const url = environment.baseURL + `robotScripts/v2/${script.id}/versions`;
+    this.log(`Generating version for script with id of ${script.id}`);
+    var data = new Script();
+    data.script = script.script;
+    data.description = description;
+    return this.http.post<any>(url, data)
+      .pipe(
+        tap(_ => this.log(`Generated version for script with id of ${script.id}`)),
+        map(result => {
+          script.versions.push(result.data);
+          return result;
+        }),
+        catchError(this.returnError(`update id=${script.id}`))
       );
   }
 

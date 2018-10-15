@@ -7,8 +7,9 @@ import { ScriptParameter } from '../script-parameter';
 import { ScriptResource } from '../script-resource';
 import { ScriptSettingsService } from '../script-settings.service';
 import { ScriptSettings } from '../script-value';
-import { Observable, observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { ScriptViewService, ScriptView } from '../script-view.service';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-scripts',
@@ -124,6 +125,10 @@ export class ScriptsComponent implements OnInit {
     this.scriptView.changeView('resource', resource);
   }
 
+  openVersion(resource: ScriptResource) {
+    this.scriptView.changeView('version', resource);
+  }
+
   save(script: Script): void {
     Script.pack(script);
     script.category = +script.category;
@@ -162,6 +167,18 @@ export class ScriptsComponent implements OnInit {
       });
   }
 
+  generateVersion(description: string): void {
+    this.scriptService.generateVersion(this.currentScript, description)
+      .subscribe(result => {
+        if (result.status === 'Ok') {
+          this.showSuccess('Version has been generated for script');
+        } else {
+          // TODO: Use a modal dialog
+          alert(result.msg);
+        }
+      });
+  }
+
   delete(script: Script): void {
     this.scriptService.delete(script)
       .subscribe(result => {
@@ -190,6 +207,10 @@ export class ScriptsComponent implements OnInit {
     console.log('TODO: import scripts');
   }
 
+  timeAgo(value: Date): string {
+    return moment(value).fromNow();
+  }
+
   private initialiseScript(script): void {
     Script.unpack(script);
     (script.resources || []).forEach(res => res.resourceTypeName = this.settings.findResourceType(res.resourceType).value);
@@ -199,7 +220,8 @@ export class ScriptsComponent implements OnInit {
     });
     this.currentScript.deletedParameters = [];
     this.currentScript.deletedResources = [];
-}
+    this.currentScript.versions.sort((a, b) => a.version == b.version ? 0 : (a.version < b.version ? 1 : -1));
+  }
 
   private showSuccess(msg: string): void {
     this.actionMessage = msg;

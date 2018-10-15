@@ -1,5 +1,6 @@
 import { ScriptParameter } from './script-parameter'
 import { ScriptResource } from './script-resource'
+import { ScriptVersion } from './script-version';
 
 export class Script {
     id: number;
@@ -11,10 +12,12 @@ export class Script {
     isLoaded: boolean;
     original: Script;
     flags: number;
+    format: number;
     category: number;
     categoryName: string;
     isNew: boolean;
     isAdding: boolean;
+    versions: ScriptVersion[];
 
     // Flags
     isObsolete: boolean;

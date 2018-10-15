@@ -20,6 +20,8 @@ import { ScriptResourcesComponent } from './script-resources/script-resources.co
 import { ScriptResourceDetailsComponent } from './script-resource-details/script-resource-details.component';
 import { ScriptParameterDetailsComponent } from './script-parameter-details/script-parameter-details.component';
 import { AceEditorModule } from 'ng2-ace-editor';
+import { ScriptVersionsComponent } from './script-versions/script-versions.component';
+import { ScriptVersionDetailsComponent } from './script-version-details/script-version-details.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +36,9 @@ import { AceEditorModule } from 'ng2-ace-editor';
     ScriptParametersComponent,
     ScriptResourcesComponent,
     ScriptResourceDetailsComponent,
-    ScriptParameterDetailsComponent
+    ScriptParameterDetailsComponent,
+    ScriptVersionsComponent,
+    ScriptVersionDetailsComponent
   ],
   imports: [
     HttpClientModule,

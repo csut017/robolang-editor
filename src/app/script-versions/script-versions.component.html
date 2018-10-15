@@ -1,0 +1,9 @@
+<form clrForm>
+  <clr-textarea-container>
+    <label>Description</label>
+    <textarea clrTextarea [(ngModel)]="description" name="description"></textarea>
+  </clr-textarea-container>
+  <div>
+    <button class="btn btn-primary" (click)="generateVersion()">Add Version</button>
+  </div>
+</form>
