@@ -7,6 +7,7 @@ import { MessageService } from './message.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment'
 import { ScriptParameter } from './script-parameter';
+import { ScriptVersion } from './script-version';
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +39,16 @@ export class ScriptService {
           script.versions = resp.items || [];
           return script;
         })
+      );
+  }
+
+  getScriptVersion(scriptID: number, versionID: number): Observable<ScriptVersion> {
+    const url = environment.baseURL + `robotScripts/v2/${scriptID}/versions/${versionID}`;
+    this.log(`Fetching version with id of ${versionID}`);
+    return this.http.get<any>(url)
+      .pipe(
+        tap(_ => this.log(`Fetched version with id of ${versionID}`)),
+        catchError(this.handleError<Script>(`getScriptVersion id=${versionID}`))
       );
   }
 

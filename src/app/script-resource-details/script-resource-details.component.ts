@@ -85,7 +85,7 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(_: SimpleChanges) {
     if (this.settings) this.loadContent();
   }
 }

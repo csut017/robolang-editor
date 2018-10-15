@@ -71,21 +71,21 @@
                 </ng-template>
               </clr-tree-node>
               <clr-tree-node *ngIf="!currentScript.isAdding">
-                  <button class="clr-treenode-link" [class.active]="view.currentView=='versions'" (click)="scriptView.changeView('versions')">
-                    <clr-icon shape="file-group"></clr-icon>
-                    Versions
-                  </button>
-                  <ng-template [clrIfExpanded]="true">
-                    <clr-tree-node *ngFor="let version of currentScript.versions">
-                      <button (click)="openVersion(version)" class="clr-treenode-link" [class.active]="view.currentView=='version' && currentVersion == version">
-                        <clr-icon shape="file-group"></clr-icon>
-                        {{version.version}} 
-                        [{{timeAgo(version.updated)}}]
-                      </button>
-                    </clr-tree-node>
-                  </ng-template>
-                </clr-tree-node>
-              </div>
+                <button class="clr-treenode-link" [class.active]="view.currentView=='versions'" (click)="scriptView.changeView('versions')">
+                  <clr-icon shape="file-group"></clr-icon>
+                  Versions
+                </button>
+                <ng-template [clrIfExpanded]="true">
+                  <clr-tree-node *ngFor="let version of currentScript.versions">
+                    <button (click)="openVersion(version)" class="clr-treenode-link" [class.active]="view.currentView=='version' && currentVersion == version">
+                      <clr-icon shape="file-group"></clr-icon>
+                      {{version.version}}
+                      [{{timeAgo(version.updated)}}]
+                    </button>
+                  </clr-tree-node>
+                </ng-template>
+              </clr-tree-node>
+            </div>
           </div>
           <div class="clr-col">
             <div *ngIf="isLoading">
@@ -115,13 +115,13 @@
               <app-script-resource-details [currentScript]="currentScript" [currentResource]="currentResource" (saving)="save($event)"></app-script-resource-details>
             </div>
             <div *ngIf="!isLoading && view.currentView=='versions'">
-                <app-script-versions [currentScript]="currentScript" (versioning)="generateVersion($event)"></app-script-versions>
-              </div>
+              <app-script-versions [currentScript]="currentScript" (versioning)="generateVersion($event)"></app-script-versions>
             </div>
             <div *ngIf="!isLoading && view.currentView=='version'">
-                <app-script-version-details [currentScript]="currentScript" [currentVersion]="currentVersion" (saving)="save($event)"></app-script-version-details>
-              </div>
+              <app-script-version-details [currentScript]="currentScript" [currentVersion]="currentVersion" (saving)="save($event)"></app-script-version-details>
+            </div>
           </div>
+        </div>
       </div>
       <div *ngIf="!currentScript">
         <div>

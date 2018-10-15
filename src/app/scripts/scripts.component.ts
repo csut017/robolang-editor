@@ -10,6 +10,7 @@ import { ScriptSettings } from '../script-value';
 import { Observable } from 'rxjs';
 import { ScriptViewService, ScriptView } from '../script-view.service';
 import * as moment from 'moment';
+import { ScriptVersion } from '../script-version';
 
 @Component({
   selector: 'app-scripts',
@@ -23,6 +24,7 @@ export class ScriptsComponent implements OnInit {
   currentScript: Script;
   currentParameter: ScriptParameter;
   currentResource: ScriptResource;
+  currentVersion: ScriptVersion;
   isLoading: boolean = false;
   view: ScriptView;
   actionMessage: string;
@@ -38,14 +40,22 @@ export class ScriptsComponent implements OnInit {
         case 'parameter':
           this.currentParameter = view.currentItem;
           this.currentResource = undefined;
+          this.currentVersion = undefined;
           break;
         case 'resource':
           this.currentParameter = undefined;
           this.currentResource = view.currentItem;
+          this.currentVersion = undefined;
+          break;
+        case 'version':
+          this.currentParameter = undefined;
+          this.currentResource = undefined;
+          this.currentVersion = view.currentItem;
           break;
         default:
           this.currentParameter = undefined;
           this.currentResource = undefined;
+          this.currentVersion = undefined;
           break;
       }
     });

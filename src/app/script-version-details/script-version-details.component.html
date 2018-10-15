@@ -1,3 +1,25 @@
-<p>
-  script-version-details works!
-</p>
+<form clrForm>
+  <div class="clr-row">
+    <div class="clr-col">
+      <clr-input-container>
+        <label>Version</label>
+        <input clrInput placeholder="name" name="version" [(ngModel)]="currentVersion.version" readonly />
+      </clr-input-container>
+    </div>
+    <div class="clr-col">
+      <clr-input-container>
+        <label>Date</label>
+        <input clrInput placeholder="name" name="updated" [(ngModel)]="whenUpdated" readonly />
+      </clr-input-container>
+    </div>
+  </div>
+  <clr-textarea-container>
+    <label>Description</label>
+    <textarea clrTextarea [(ngModel)]="currentVersion.description" name="description" readonly></textarea>
+  </clr-textarea-container>
+  <div class="clr-form-control">
+    <label class="clr-control-label">Script</label>
+    <ace-editor [(text)]="currentVersion.script" [options]="editorOptions" theme="chrome" mode="python" style="min-height: calc(100vh - 400px); margin-bottom: 10px; width:100%;">
+    </ace-editor>
+  </div>
+</form>
