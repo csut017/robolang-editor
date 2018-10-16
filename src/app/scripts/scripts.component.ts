@@ -158,18 +158,18 @@ export class ScriptsComponent implements OnInit {
             script.id = result.data.id;
             this.router.navigate([`/scripts/${script.id}`]);
             script.isNew = true;
+            this.currentScript.original = new Script();
+            this.currentScript.original.id = script.id;
+            this.currentScript.isAdding = false;
+            this.currentScript.parameters = result.data.parameters;
+            this.currentScript.resources = result.data.resources;
+            this.initialiseScript(this.currentScript);
+          } else {
+            if (script.original) {
+              this.currentScript = this.currentScript.original;
+              this.changeScript(this.currentScript);
+            }
           }
-
-          if (script.original) {
-            script.original.name = script.name;
-            script.original.flags = script.flags;
-            script.original.categoryName = script.categoryName;
-          }
-
-          this.currentScript.isAdding = false;
-          this.currentScript.parameters = result.data.parameters;
-          this.currentScript.resources = result.data.resources;
-          this.initialiseScript(this.currentScript);
         } else {
           // TODO: Use a modal dialog
           alert(result.msg);
@@ -225,12 +225,12 @@ export class ScriptsComponent implements OnInit {
     Script.unpack(script);
     (script.resources || []).forEach(res => res.resourceTypeName = this.settings.findResourceType(res.resourceType).value);
     (script.parameters || []).forEach(param => {
-      param.dataTypeName = this.settings.findDataType(param.dataType).value;
+      if (param.dataType) param.dataTypeName = this.settings.findDataType(param.dataType).value;
       ScriptParameter.unpack(param);
     });
     this.currentScript.deletedParameters = [];
     this.currentScript.deletedResources = [];
-    this.currentScript.versions.sort((a, b) => a.version == b.version ? 0 : (a.version < b.version ? 1 : -1));
+    (this.currentScript.versions || []).sort((a, b) => a.version == b.version ? 0 : (a.version < b.version ? 1 : -1));
   }
 
   private showSuccess(msg: string): void {
