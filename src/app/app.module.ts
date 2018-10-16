@@ -6,7 +6,6 @@ import { ClarityModule, ClrFormsNextModule } from '@clr/angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ScriptsComponent } from './scripts/scripts.component';
 import { FormsModule } from '@angular/forms';
-import { MessagesComponent } from './messages/messages.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AuthenticationInterceptor } from './authentication-interceptor';
@@ -27,7 +26,6 @@ import { ScriptVersionDetailsComponent } from './script-version-details/script-v
   declarations: [
     AppComponent,
     ScriptsComponent,
-    MessagesComponent,
     LoginComponent,
     HeaderComponent,
     RobotsComponent,

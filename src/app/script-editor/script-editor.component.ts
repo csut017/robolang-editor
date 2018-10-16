@@ -1,13 +1,13 @@
 import { Component, EventEmitter, OnInit, Input, Output, OnChanges, SimpleChanges, ViewChild, HostListener } from '@angular/core';
-import { Script } from '../script';
-import { ValidationService, ValidationResult } from '../validation.service';
+import { Script } from '../data/script';
+import { ValidationService, ValidationResult } from '../services/validation.service';
 
 // Import the theme and mode
 import "brace";
 import "brace/theme/chrome";
 import "../roboLang";
 import { AceEditorComponent } from 'ng2-ace-editor';
-import { HelpInfo, ScriptHelpService } from '../script-help.service';
+import { HelpInfo, ScriptHelpService } from '../services/script-help.service';
 import { debounceTime, tap } from 'rxjs/operators';
 
 class statusInfo {

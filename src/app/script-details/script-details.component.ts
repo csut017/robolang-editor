@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Input, Output } from '@angular/core';
-import { Script } from '../script';
-import { ScriptSettingsService } from '../script-settings.service';
-import { ScriptValue } from '../script-value';
+import { Script } from '../data/script';
+import { ScriptSettingsService } from '../services/script-settings.service';
+import { ScriptValue } from '../data/script-value';
 
 @Component({
   selector: 'app-script-details',

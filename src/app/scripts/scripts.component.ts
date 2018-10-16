@@ -1,16 +1,16 @@
 import { HostListener, Component, OnInit } from '@angular/core';
-import { Script } from '../script';
-import { ScriptService } from '../script.service'
+import { Script } from '../data/script';
+import { ScriptService } from '../services/script.service'
 import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
-import { ScriptParameter } from '../script-parameter';
-import { ScriptResource } from '../script-resource';
-import { ScriptSettingsService } from '../script-settings.service';
-import { ScriptSettings } from '../script-value';
+import { ScriptParameter } from '../data/script-parameter';
+import { ScriptResource } from '../data/script-resource';
+import { ScriptSettingsService } from '../services/script-settings.service';
+import { ScriptSettings } from '../data/script-value';
 import { Observable } from 'rxjs';
-import { ScriptViewService, ScriptView } from '../script-view.service';
+import { ScriptViewService, ScriptView } from '../services/script-view.service';
 import * as moment from 'moment';
-import { ScriptVersion } from '../script-version';
+import { ScriptVersion } from '../data/script-version';
 
 @Component({
   selector: 'app-scripts',

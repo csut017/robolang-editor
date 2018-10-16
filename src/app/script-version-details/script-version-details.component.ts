@@ -1,7 +1,7 @@
 import { Component, OnInit, EventEmitter, Input, Output, OnChanges, SimpleChanges, HostListener } from '@angular/core';
-import { ScriptVersion } from '../script-version';
-import { Script } from '../script';
-import { ScriptService } from '../script.service';
+import { ScriptVersion } from '../data/script-version';
+import { Script } from '../data/script';
+import { ScriptService } from '../services/script.service';
 import * as moment from 'moment';
 
 @Component({

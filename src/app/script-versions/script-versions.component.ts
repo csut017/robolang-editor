@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Script } from '../script';
+import { Script } from '../data/script';
 
 @Component({
   selector: 'app-script-versions',

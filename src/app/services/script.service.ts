@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Script } from './script';
-import { ScriptResource } from './script-resource';
+import { Script } from '../data/script';
+import { ScriptResource } from '../data/script-resource';
 import { Observable, of, forkJoin } from 'rxjs';
 import { catchError, map, tap, mergeMap, concatMap } from 'rxjs/operators';
 import { MessageService } from './message.service';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../environments/environment'
-import { ScriptParameter } from './script-parameter';
-import { ScriptVersion } from './script-version';
+import { environment } from '../../environments/environment'
+import { ScriptParameter } from '../data/script-parameter';
+import { ScriptVersion } from '../data/script-version';
 
 @Injectable({
   providedIn: 'root'

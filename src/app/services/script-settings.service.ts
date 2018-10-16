@@ -1,11 +1,11 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { ScriptSettings } from './script-value';
+import { ScriptSettings } from '../data/script-value';
 import { Observable, of, forkJoin } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { MessageService } from './message.service';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../environments/environment'
-import { Language } from './language';
+import { environment } from '../../environments/environment'
+import { Language } from '../data/language';
 
 @Injectable({
   providedIn: 'root'

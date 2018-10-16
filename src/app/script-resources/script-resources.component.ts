@@ -1,9 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Script } from '../script';
-import { ScriptResource } from '../script-resource';
-import { ScriptViewService } from '../script-view.service';
-import { ScriptSettingsService } from '../script-settings.service';
-import { ScriptValue } from '../script-value';
+import { Script } from '../data/script';
+import { ScriptResource } from '../data/script-resource';
+import { ScriptViewService } from '../services/script-view.service';
+import { ScriptSettingsService } from '../services/script-settings.service';
+import { ScriptValue } from '../data/script-value';
 
 @Component({
   selector: 'app-script-resources',

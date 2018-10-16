@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { MessageService } from './message.service';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../environments/environment'
+import { environment } from '../../environments/environment'
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { Script } from './script';
+import { Script } from '../data/script';
 import { ScriptHelpService, HelpInfo, FunctionArgument, FunctionChild } from './script-help.service';
 
 export class ValidationResult {

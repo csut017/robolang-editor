@@ -1,9 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthenticationService } from '../authentication.service';
-import { ScriptSettingsService } from '../script-settings.service';
-import { Language } from '../language';
-import { ScriptSettings } from '../script-value';
+import { AuthenticationService } from '../services/authentication.service';
+import { ScriptSettingsService } from '../services/script-settings.service';
+import { Language } from '../data/language';
+import { ScriptSettings } from '../data/script-value';
 
 @Component({
   selector: 'app-header',

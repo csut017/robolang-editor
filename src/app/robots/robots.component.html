@@ -1,5 +1,26 @@
-<app-header view="Robots"></app-header>
-
-<p>
-  robots works!
-</p>
+<div class="main-container">
+  <app-header view="Robots"></app-header>
+  <div class="content-container">
+    <div class="content-area">
+    </div>
+    <nav class="sidenav">
+      <section class="sidenav-content">
+        <section class="nav-group collapsible">
+          <input id="robots" type="checkbox">
+          <label for="robots">
+            <clr-icon shape="users"></clr-icon>
+            Robots
+          </label>
+          <ul class="nav-list">
+            <li *ngFor="let robot of robots">
+              <a href="javascript://" [class.active]="currentRobot && (currentRobot.id==robot.id)" class="nav-link"
+                (click)="changeRobot(robot)">
+                  {{robot.name}}
+              </a>
+            </li>
+          </ul>
+        </section>
+      </section>
+    </nav>
+  </div>
+</div>
