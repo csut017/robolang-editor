@@ -171,14 +171,20 @@ export class ValidationService {
     });
 
     if (item.hasParents) {
-      var isValid = !!parent;
-      if (isValid) {
+      var isValid = !!parent,
+          checkRoot = !!item.parents.find(p => p == '-');
+      
+      if (checkRoot) {
+        isValid = !parent || item.parents.length > 1;
+      }
+
+      if (isValid && parent) {
         const parentName = parent.token.value;
         isValid = !!item.parents.find(p => p == parentName);
       }
 
       if (!isValid) {
-        const parentNames = item.parents.map(p => `'${p}'`).join(' or ');
+        const parentNames = item.parents.map(p => p == '-' ? '<root>' : `'${p}'`).join(' or ');
         result.issues.push(ParseError.FromToken(`'${funcName}' must be a child of ${parentNames}`, node.token));
       }
     }

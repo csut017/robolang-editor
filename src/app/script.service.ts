@@ -89,7 +89,7 @@ export class ScriptService {
   }
 
   private update(script: Script): Observable<any> {
-    const url = environment.baseURL + `robotScripts/${script.id}`;
+    const url = environment.baseURL + `robotScripts/v2/${script.id}`;
     this.log(`Updating script with id of ${script.id}`);
     return this.http.put<any>(url, script)
       .pipe(
@@ -117,7 +117,7 @@ export class ScriptService {
   }
 
   private addNew(script: Script): Observable<any> {
-    const url = environment.baseURL + `robotScripts`;
+    const url = environment.baseURL + `robotScripts/v2`;
     this.log(`Adding new script`);
     return this.http.post<any>(url, script)
       .pipe(

@@ -66,6 +66,7 @@ const ArgumentType = {
   Variable: 'VARIABLE' as 'VARIABLE',
   Boolean: 'YES/NO' as 'YES/NO',
   Time: 'TIME' as 'TIME',
+  Type: 'TYPE' as 'TYPE',
   Any: 'ANY' as 'ANY'
 }
 type ArgumentType = (typeof ArgumentType)[keyof typeof ArgumentType];
@@ -123,7 +124,8 @@ export class ScriptHelpService {
         .addChild('*', ChildNumber.OneOrMore),
       new HelpInfo('function', 'Defines a new function.')
         .addArgument('name', ArgumentType.String, true)
-        .addChild('*', ChildNumber.OneOrMore),
+        .addChild('*', ChildNumber.OneOrMore)
+        .addParent('-'),
       new HelpInfo('greater', 'Checks if the condition is greater than the input.')
         .addArgument('condition', ArgumentType.Any, true)
         .addChild('*', ChildNumber.OneOrMore)
@@ -142,6 +144,13 @@ export class ScriptHelpService {
         .addArgument('location', ArgumentType.String, true)
         .addChild('arrived', ChildNumber.OneOrZero)
         .addChild('blocked', ChildNumber.OneOrZero),
+      new HelpInfo('parameter', 'Defines a parameter for the script')
+        .addArgument('name', ArgumentType.String, true)
+        .addArgument('type', ArgumentType.Type, true)
+        .addArgument('split', ArgumentType.Boolean)
+        .addArgument('required', ArgumentType.Boolean)
+        .addParent('-')
+        .addParent('function'),
       new HelpInfo('play', 'Plays an external resource (audio or video).')
         .addArgument('movement', ArgumentType.String)
         .addArgument('sound', ArgumentType.String)
