@@ -2,6 +2,30 @@
   <app-header view="Robots"></app-header>
   <div class="content-container">
     <div class="content-area">
+      <div *ngIf="!currentRobot">
+        Please select a robot to view.
+      </div>
+      <div *ngIf="currentRobot">
+        <h1>
+          {{currentRobot.display}}
+          <span class="badge" [class.badge-danger]="!connected" [class.badge-success]="connected">
+            {{connected ? 'Connected' : 'Disconnected'}}
+          </span>
+        </h1>
+        <div *ngIf="connected">
+          TODO: Robot functionality
+        </div>
+        <div *ngIf="!connected">
+          <div *ngIf="currentRobot.address">
+            <button class="btn btn-primary" (click)="connect()">
+              Connect to Robot
+            </button>
+          </div>
+          <div *ngIf="!currentRobot.address">
+            Unable to connect to robot: robot must connect to Robogen first.
+          </div>
+        </div>
+      </div>
     </div>
     <nav class="sidenav">
       <section class="sidenav-content">
@@ -15,7 +39,7 @@
             <li *ngFor="let robot of robots">
               <a href="javascript://" [class.active]="currentRobot && (currentRobot.id==robot.id)" class="nav-link"
                 (click)="changeRobot(robot)">
-                  {{robot.name}}
+                {{robot.name}}
               </a>
             </li>
           </ul>

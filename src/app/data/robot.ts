@@ -1,7 +1,7 @@
 export class Robot {
     id: number;
     display: string;
-    iPAddresses: string;
+    address: string;
 
     isLoaded: boolean;
     isAdding: boolean;
