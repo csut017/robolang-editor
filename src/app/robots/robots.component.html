@@ -8,12 +8,11 @@
       <div *ngIf="currentRobot">
         <h1>
           {{currentRobot.display}}
-          <span class="badge" [class.badge-danger]="!connected" [class.badge-success]="connected">
-            {{connected ? 'Connected' : 'Disconnected'}}
-          </span>
+          <span class="badge badge-danger" *ngIf="!connected">Disconnected'</span>
+          <span class="badge badge-success" *ngIf="connected">Connected'</span>
         </h1>
         <div *ngIf="connected">
-          TODO: Robot functionality
+          <app-robot-interface [client]="client"></app-robot-interface>
         </div>
         <div *ngIf="!connected">
           <div *ngIf="currentRobot.address">

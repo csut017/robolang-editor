@@ -50,6 +50,8 @@ export class RobotClient {
   connected: boolean;
   private address: string;
   private socket: WebSocket;
+  private id: number = 0;
+  private handlers: { [index: number]: messageHandler } = {};
 
   canConnect(): boolean {
     return !!this.address;
@@ -69,8 +71,20 @@ export class RobotClient {
     };
     this.socket.onmessage = evt => {
       this.log('Message received', evt.data);
-      var out = JSON.parse(evt.data);
-      this.onMessageReceived.emit(out);
+      var out = JSON.parse(evt.data),
+        emit = true;
+      if (out && out.id) {
+        var handler = this.handlers[out.id];
+        if (handler) {
+          handler.resolve(out);
+          delete this.handlers[out.id];
+          emit = false;
+        }
+      } 
+
+      if (emit) {
+        this.onMessageReceived.emit(out);
+      }
     };
     this.socket.onerror = evt => {
       this.log(`Error received: ${evt.type}`);
@@ -78,15 +92,38 @@ export class RobotClient {
     }
   }
 
-  send(type: string, data?: any) {
-    var msg = new RobotMessage();
-    msg.Type = type;
-    if (data) msg.Data = data;
-    this.socket.send(JSON.stringify(msg));
+  send(type: string, data?: any): Promise<RobotMessage> {
+    const id = ++this.id;
+    this.sendMessage(type, data, id);
+    var promise = new Promise<RobotMessage>(
+      (resolve, reject) => this.registerHandler(id, resolve, reject)
+    );
+    return promise;
+  }
+
+  transmit(type: string, data?: any) {
+    this.sendMessage(type, data);
+  }
+
+  query(source: string): Promise<RobotMessage> {
+    const data = {'source': source};
+    return this.send('query', data);
   }
 
   close() {
     this.socket.close();
+  }
+
+  private sendMessage(type: string, data?: any, id?: number) {
+    var msg = new RobotMessage(id);
+    msg.type = type;
+    if (data) msg.data = data;
+    this.log('Sending message', msg);
+    this.socket.send(JSON.stringify(msg));
+  }
+
+  private registerHandler(id: number, resolve, reject) {
+    this.handlers[id] = new messageHandler(resolve, reject);
   }
 
   private log(message: string, data?: any) {
@@ -100,7 +137,23 @@ export class RobotClient {
   }
 }
 
+class messageHandler {
+  resolve;
+  reject;
+
+  constructor(resolve, reject) {
+    this.resolve = resolve;
+    this.reject = reject;
+  }
+}
+
 export class RobotMessage {
-  Type: string;
-  Data: any;
+  type: string;
+  data: any;
+  id: number;
+  status: string;
+
+  constructor(id?: number) {
+    this.id = id;
+  }
 }

@@ -21,6 +21,10 @@ import { ScriptParameterDetailsComponent } from './script-parameter-details/scri
 import { AceEditorModule } from 'ng2-ace-editor';
 import { ScriptVersionsComponent } from './script-versions/script-versions.component';
 import { ScriptVersionDetailsComponent } from './script-version-details/script-version-details.component';
+import { RobotInterfaceComponent } from './robot-interface/robot-interface.component';
+import { RobotSchedulesComponent } from './robot-schedules/robot-schedules.component';
+import { RobotWaitStateComponent } from './robot-wait-state/robot-wait-state.component';
+import { RobotDebugComponent } from './robot-debug/robot-debug.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +40,11 @@ import { ScriptVersionDetailsComponent } from './script-version-details/script-v
     ScriptResourceDetailsComponent,
     ScriptParameterDetailsComponent,
     ScriptVersionsComponent,
-    ScriptVersionDetailsComponent
+    ScriptVersionDetailsComponent,
+    RobotInterfaceComponent,
+    RobotSchedulesComponent,
+    RobotWaitStateComponent,
+    RobotDebugComponent
   ],
   imports: [
     HttpClientModule,

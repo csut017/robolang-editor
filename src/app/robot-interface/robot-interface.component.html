@@ -1,0 +1,27 @@
+<div class="clr-row">
+  <div class="clr-col-2">
+    <clr-tree-node>
+      <button class="clr-treenode-link" [class.active]="currentView=='schedules'" (click)="currentView='schedules'">
+        <clr-icon shape="view-list"></clr-icon>
+        Schedules
+      </button>
+    </clr-tree-node>
+    <clr-tree-node>
+      <button class="clr-treenode-link" [class.active]="currentView=='wait'" (click)="currentView='wait'">
+        <clr-icon shape="checkbox-list"></clr-icon>
+        Wait State
+      </button>
+    </clr-tree-node>
+    <clr-tree-node>
+      <button class="clr-treenode-link" [class.active]="currentView=='debug'" (click)="currentView='debug'">
+        <clr-icon shape="step-forward" class="is-solid"></clr-icon>
+        Debug
+      </button>
+    </clr-tree-node>
+  </div>
+  <div class="clr-col">
+    <app-robot-schedules *ngIf="currentView=='schedules'" [client]="client"></app-robot-schedules>
+    <app-robot-wait-state *ngIf="currentView=='wait'" [client]="client"></app-robot-wait-state>
+    <app-robot-debug *ngIf="currentView=='debug'" [client]="client"></app-robot-debug>
+  </div>
+</div>
