@@ -3,23 +3,31 @@
     <clr-tree-node *ngFor="let schedule of schedules">
       <button class="clr-treenode-link" [class.active]="currentSchedule == schedule" (click)="currentSchedule = schedule">
         <clr-icon shape="clock" [class.has-badge]="schedule.run"></clr-icon>
+        {{formatTime(schedule.time)}}:
         {{schedule.script}}
       </button>
     </clr-tree-node>
   </div>
   <div class="clr-col">
-    <clr-stack-view *ngIf="currentSchedule">
-      <clr-stack-header>
-        {{currentSchedule.script}}
-      </clr-stack-header>
-      <clr-stack-block>
-        <clr-stack-label>Event ID</clr-stack-label>
-        <clr-stack-content>{{currentSchedule.event_id}}</clr-stack-content>
-      </clr-stack-block>
-      <clr-stack-block>
-        <clr-stack-label>When</clr-stack-label>
-        <clr-stack-content>{{currentSchedule.time}}</clr-stack-content>
-      </clr-stack-block>
-    </clr-stack-view>
+    <div *ngIf="currentSchedule">
+      <clr-stack-view>
+        <clr-stack-header>
+          {{currentSchedule.script}}
+        </clr-stack-header>
+        <clr-stack-block>
+          <clr-stack-label>Event ID</clr-stack-label>
+          <clr-stack-content>{{currentSchedule.event_id}}</clr-stack-content>
+        </clr-stack-block>
+        <clr-stack-block>
+          <clr-stack-label>When</clr-stack-label>
+          <clr-stack-content>{{formatTime(currentSchedule.time)}}</clr-stack-content>
+        </clr-stack-block>
+      </clr-stack-view>
+
+      <div>
+        <button class="btn btn-primary" (click)="trigger()">Start Schedule</button>
+        <button class="btn btn-outline" (click)="debug()">Debug Schedule</button>
+      </div>
+    </div>
   </div>
 </div>

@@ -1,3 +1,35 @@
-<p>
-  robot-wait-state works!
-</p>
+<div class="clr-row">
+  <div class="clr-col" *ngIf="waits">
+    <clr-tree-node *ngFor="let wait of waits">
+      <button class="clr-treenode-link" [class.active]="currentWait == wait" (click)="currentWait = wait">
+        {{wait.script}}
+        <span class="badge" [class.badge-danger]="wait.priority>9" [class.badge-warning]="wait.priority<=9 && wait.priority>=3"
+          [class.badge-info]="wait.priority<3">
+          {{wait.priority}}
+        </span>
+      </button>
+    </clr-tree-node>
+  </div>
+  <div class="clr-col">
+    <div *ngIf="currentWait">
+      <clr-stack-view>
+        <clr-stack-block>
+          <clr-stack-label>Script</clr-stack-label>
+          <clr-stack-content>{{currentWait.script}}</clr-stack-content>
+        </clr-stack-block>
+        <clr-stack-block>
+          <clr-stack-label>Response</clr-stack-label>
+          <clr-stack-content>{{currentWait.response}}</clr-stack-content>
+        </clr-stack-block>
+        <clr-stack-block>
+          <clr-stack-label>Priority</clr-stack-label>
+          <clr-stack-content>{{currentWait.priority}}</clr-stack-content>
+        </clr-stack-block>
+      </clr-stack-view>
+
+      <div>
+        <button class="btn btn-primary" (click)="trigger()">Send Input</button>
+      </div>
+    </div>
+  </div>
+</div>

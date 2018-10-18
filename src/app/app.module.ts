@@ -25,6 +25,7 @@ import { RobotInterfaceComponent } from './robot-interface/robot-interface.compo
 import { RobotSchedulesComponent } from './robot-schedules/robot-schedules.component';
 import { RobotWaitStateComponent } from './robot-wait-state/robot-wait-state.component';
 import { RobotDebugComponent } from './robot-debug/robot-debug.component';
+import { RobotScriptsComponent } from './robot-scripts/robot-scripts.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { RobotDebugComponent } from './robot-debug/robot-debug.component';
     RobotInterfaceComponent,
     RobotSchedulesComponent,
     RobotWaitStateComponent,
-    RobotDebugComponent
+    RobotDebugComponent,
+    RobotScriptsComponent
   ],
   imports: [
     HttpClientModule,
