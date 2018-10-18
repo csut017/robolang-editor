@@ -29,12 +29,19 @@ export class RobotWaitStateComponent implements OnInit, OnChanges {
       });
   }
 
+  sendCancel() {
+    this.client.send('cancel', {id: this.currentWait.script, type: 'wait'})
+      .then(msg => {
+        console.log(msg);
+      });
+  }
+
   private queryState(){
     this.waits = undefined;
     this.currentWait = undefined;
     this.client.query('waitState')
       .then(msg => {
-        this.waits = msg.data;
+        this.waits = msg.data.sort(RobotWaitState.compare);
       });
   }
 }

@@ -10,7 +10,7 @@ export class RobotInterfaceComponent implements OnInit {
 
   constructor() { }
 
-  currentView: string = 'schedules';
+  currentView: string = 'commands';
   @Input() client: RobotClient;
 
   ngOnInit() {

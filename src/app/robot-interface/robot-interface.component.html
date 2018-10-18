@@ -1,6 +1,12 @@
 <div class="clr-row">
   <div class="clr-col-2">
     <clr-tree-node>
+      <button class="clr-treenode-link" [class.active]="currentView=='commands'" (click)="currentView='commands'">
+        <clr-icon shape="home"></clr-icon>
+        Commands
+      </button>
+    </clr-tree-node>
+    <clr-tree-node>
       <button class="clr-treenode-link" [class.active]="currentView=='schedules'" (click)="currentView='schedules'">
         <clr-icon shape="view-list"></clr-icon>
         Schedules
@@ -26,6 +32,7 @@
     </clr-tree-node>
   </div>
   <div class="clr-col">
+    <app-robot-commands *ngIf="currentView=='commands'" [client]="client"></app-robot-commands>
     <app-robot-schedules *ngIf="currentView=='schedules'" [client]="client"></app-robot-schedules>
     <app-robot-scripts *ngIf="currentView=='scripts'" [client]="client"></app-robot-scripts>
     <app-robot-wait-state *ngIf="currentView=='wait'" [client]="client"></app-robot-wait-state>

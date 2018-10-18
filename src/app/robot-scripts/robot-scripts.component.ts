@@ -42,7 +42,7 @@ export class RobotScriptsComponent implements OnInit, OnChanges {
     this.currentScript = undefined;
     this.client.query('scripts')
       .then(msg => {
-        this.scripts = msg.data;
+        this.scripts = msg.data.sort(RobotScript.compare);
       });
   }
 }

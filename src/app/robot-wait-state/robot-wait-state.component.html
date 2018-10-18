@@ -2,7 +2,7 @@
   <div class="clr-col" *ngIf="waits">
     <clr-tree-node *ngFor="let wait of waits">
       <button class="clr-treenode-link" [class.active]="currentWait == wait" (click)="currentWait = wait">
-        {{wait.script}}
+        {{wait.response}}
         <span class="badge" [class.badge-danger]="wait.priority>9" [class.badge-warning]="wait.priority<=9 && wait.priority>=3"
           [class.badge-info]="wait.priority<3">
           {{wait.priority}}
@@ -29,6 +29,7 @@
 
       <div>
         <button class="btn btn-primary" (click)="trigger()">Send Input</button>
+        <button class="btn btn-danger-outline" (click)="sendCancel()">Cancel Wait</button>
       </div>
     </div>
   </div>

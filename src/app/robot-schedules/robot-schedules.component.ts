@@ -32,8 +32,15 @@ export class RobotSchedulesComponent implements OnInit, OnChanges {
   }
 
   formatTime(date: string): string{
-    if (!date) return '';
+    if (!date) return 'n/a';
     return moment(date).format('h:mm:ss a');
+  }
+
+  sendCancel() {
+    this.client.send('cancel', {id: this.currentSchedule.event_id, type: 'wait'})
+      .then(msg => {
+        console.log(msg);
+      });
   }
 
   private triggerSchedule(debug: boolean) {
@@ -48,7 +55,7 @@ export class RobotSchedulesComponent implements OnInit, OnChanges {
     this.currentSchedule = undefined;
     this.client.query('schedules')
       .then(msg => {
-        this.schedules = msg.data;
+        this.schedules = msg.data.sort(RobotSchedule.compare);
       });
   }
 }
