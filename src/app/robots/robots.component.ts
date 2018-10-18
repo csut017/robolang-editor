@@ -21,6 +21,7 @@ export class RobotsComponent implements OnInit {
   isLoading: boolean = false;
   client: RobotClient;
   connected: boolean = false;
+  connectionError: boolean = false;
 
   ngOnInit() {
     this.getRobots();
@@ -33,18 +34,22 @@ export class RobotsComponent implements OnInit {
       .subscribe(client => {
         if (client.canConnect()) {
           this.log('Opening connection');
+          var connecting = true;
           client.connect();
           client.onClosed.subscribe(_ => {
             this.log(`Disconnected to ${robotName}`);
             this.connected = false;
+            this.connectionError = connecting;
           });
           client.onConnected.subscribe(_ => {
             this.log(`Connected to ${robotName}`);
             this.connected = true;
+            connecting = false;
           })
           this.client = client;
         } else {
           this.log(`Unable to connect to ${robotName}`);
+          this.connectionError = true;
         }
       });
   }

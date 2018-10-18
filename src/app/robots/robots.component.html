@@ -19,6 +19,13 @@
             <button class="btn btn-primary" (click)="connect()">
               Connect to Robot
             </button>
+            <clr-alert [clrAlertType]="'alert-danger'" [clrAlertClosable]="false" *ngIf="connectionError">
+              <div class="alert-item">
+                <span class="alert-text">
+                  Unable to connect to robot
+                </span>
+              </div>
+            </clr-alert>
           </div>
           <div *ngIf="!currentRobot.address">
             Unable to connect to robot: robot must connect to Robogen first.

@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { RobotClient } from '../services/robot-communications.service';
+import { RobotSchedule } from '../data/robot-schedule';
 
 @Component({
   selector: 'app-robot-schedules',
@@ -10,6 +11,8 @@ export class RobotSchedulesComponent implements OnInit, OnChanges {
 
   constructor() { }
 
+  schedules: RobotSchedule[];
+  currentSchedule: RobotSchedule;
   @Input() client: RobotClient;
 
   ngOnInit() {
@@ -20,9 +23,11 @@ export class RobotSchedulesComponent implements OnInit, OnChanges {
   }
 
   private queryState() {
+    this.schedules = undefined;
+    this.currentSchedule = undefined;
     this.client.query('schedules')
       .then(msg => {
-        console.log(msg);
+        this.schedules = msg.data;
       });
   }
 }
