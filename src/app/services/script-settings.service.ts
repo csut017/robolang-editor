@@ -1,11 +1,12 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { ScriptSettings } from '../data/script-value';
 import { Observable, of, forkJoin } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { MessageService } from './message.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment'
 import { Language } from '../data/language';
+import { ScriptSettings } from '../data/script-settings';
+import { Editor } from '../data/editor';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,8 @@ export class ScriptSettingsService {
 
   languageChanged = new EventEmitter<Language>();
   selectedLanguage: Language;
+  editorChanged = new EventEmitter<Editor>();
+  selectedEditor: Editor;
 
   constructor(private http: HttpClient,
     private messageService: MessageService) {
@@ -35,6 +38,11 @@ export class ScriptSettingsService {
     }
 
     return this.onDownload;
+  }
+
+  changeEditor(editor: Editor): void {
+    this.selectedEditor = editor;
+    this.editorChanged.emit(editor);
   }
 
   changeLanguage(language: Language): void {
@@ -73,6 +81,7 @@ export class ScriptSettingsService {
           settings.resourceTypes = data[2].mappings;
           settings.languages = data[3].items;
           this.selectedLanguage = settings.languages[0];
+          this.selectedEditor = settings.editors.find(ed => ed.isDefault);
           return settings;
         })
       );

@@ -12,18 +12,31 @@
   <div class="header-actions">
     <clr-dropdown>
       <button class="nav-icon" clrDropdownTrigger>
-        <clr-icon shape="book"></clr-icon>
+        <clr-icon shape="cog"></clr-icon>
         <clr-icon shape="caret down"></clr-icon>
       </button>
       <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
-        <a href="javascript://" clrDropdownItem *ngFor="let language of settings.languages" (click)="changeLanguage(language)">
-          <clr-icon shape="circle" *ngIf="language != selectedLanguage"></clr-icon>
-          <clr-icon shape="check-circle" class="is-solid" *ngIf="language == selectedLanguage"></clr-icon>
-          {{language.name}}
+        <a href="javascript://" clrDropdownItem *ngFor="let editor of settings.editors" (click)="changeEditor(editor)">
+          <clr-icon shape="circle" *ngIf="editor != selectedEditor"></clr-icon>
+          <clr-icon shape="check-circle" class="is-solid" *ngIf="editor == selectedEditor"></clr-icon>
+          {{editor.name}}
         </a>
       </clr-dropdown-menu>
     </clr-dropdown>
-    <a (click)="logout()" class="nav-link nav-icon" href="javascript://">
+    <clr-dropdown>
+        <button class="nav-icon" clrDropdownTrigger>
+          <clr-icon shape="book"></clr-icon>
+          <clr-icon shape="caret down"></clr-icon>
+        </button>
+        <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
+          <a href="javascript://" clrDropdownItem *ngFor="let language of settings.languages" (click)="changeLanguage(language)">
+            <clr-icon shape="circle" *ngIf="language != selectedLanguage"></clr-icon>
+            <clr-icon shape="check-circle" class="is-solid" *ngIf="language == selectedLanguage"></clr-icon>
+            {{language.name}}
+          </a>
+        </clr-dropdown-menu>
+      </clr-dropdown>
+      <a (click)="logout()" class="nav-link nav-icon" href="javascript://">
       <clr-icon shape="lock"></clr-icon>
     </a>
   </div>

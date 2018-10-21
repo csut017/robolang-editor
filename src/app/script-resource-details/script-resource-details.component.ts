@@ -2,13 +2,14 @@ import { Component, EventEmitter, OnInit, Input, Output, OnChanges, SimpleChange
 import { Script } from '../data/script';
 import { ScriptResource, ResourceContent } from '../data/script-resource';
 import { ScriptSettingsService } from '../services/script-settings.service';
-import { ScriptValue, ScriptSettings } from '../data/script-value';
+import { ScriptValue } from '../data/script-value';
 import { ScriptViewService } from '../services/script-view.service';
 import { ScriptResourceService } from '../services/script-resource.service';
 
 // Import the theme and mode
 import "brace";
 import "brace/theme/chrome";
+import { ScriptSettings } from '../data/script-settings';
 
 @Component({
   selector: 'app-script-resource-details',
