@@ -40,6 +40,12 @@
                   Script
                 </button>
               </clr-tree-node>
+              <clr-tree-node>
+                <button class="clr-treenode-link" [class.active]="view.currentView=='blockly'" (click)="scriptView.changeView('blockly')">
+                  <clr-icon shape="blocks-group" class="is-solid"></clr-icon>
+                  Blocks
+                </button>
+              </clr-tree-node>
               <clr-tree-node *ngIf="!currentScript.isAdding">
                 <button class="clr-treenode-link" [class.active]="view.currentView=='parameters'" (click)="scriptView.changeView('parameters')">
                   <clr-icon shape="view-list"></clr-icon>
@@ -100,6 +106,9 @@
             </div>
             <div *ngIf="!isLoading && view.currentView=='script'">
               <app-script-editor [currentScript]="currentScript" (saving)="save($event)"></app-script-editor>
+            </div>
+            <div *ngIf="!isLoading && view.currentView=='blockly'">
+              <app-blockly-editor [currentScript]="currentScript" (saving)="save($event)"></app-blockly-editor>
             </div>
             <div *ngIf="!isLoading && view.currentView=='parameters'">
               <app-script-parameters [currentScript]="currentScript"></app-script-parameters>

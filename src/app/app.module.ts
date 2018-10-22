@@ -27,6 +27,7 @@ import { RobotWaitStateComponent } from './robot-wait-state/robot-wait-state.com
 import { RobotDebugComponent } from './robot-debug/robot-debug.component';
 import { RobotScriptsComponent } from './robot-scripts/robot-scripts.component';
 import { RobotCommandsComponent } from './robot-commands/robot-commands.component';
+import { BlocklyEditorComponent } from './blockly-editor/blockly-editor.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import { RobotCommandsComponent } from './robot-commands/robot-commands.componen
     RobotWaitStateComponent,
     RobotDebugComponent,
     RobotScriptsComponent,
-    RobotCommandsComponent
+    RobotCommandsComponent,
+    BlocklyEditorComponent
   ],
   imports: [
     HttpClientModule,
