@@ -22,6 +22,7 @@ import { AceEditorModule } from 'ng2-ace-editor';
 import { ScriptVersionsComponent } from './script-versions/script-versions.component';
 import { ScriptVersionDetailsComponent } from './script-version-details/script-version-details.component';
 import { BlocklyEditorComponent } from './blockly-editor/blockly-editor.component';
+import { RobotDetailsComponent } from './robot-details/robot-details.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { BlocklyEditorComponent } from './blockly-editor/blockly-editor.componen
     ScriptParameterDetailsComponent,
     ScriptVersionsComponent,
     ScriptVersionDetailsComponent,
-    BlocklyEditorComponent
+    BlocklyEditorComponent,
+    RobotDetailsComponent
   ],
   imports: [
     HttpClientModule,

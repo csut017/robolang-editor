@@ -6,72 +6,7 @@
         Please select a robot to view.
       </div>
       <div *ngIf="currentRobot">
-        <h1>
-          {{currentRobot.display}}
-        </h1>
-        <div class="clr-row">
-          <div class="clr-col">
-            <div class="card">
-              <div class="card-block">
-                <form clrForm>
-                  <clr-input-container>
-                    <label>Internal Name</label>
-                    <input clrInput placeholder="name" name="robotName" [(ngModel)]="currentRobot.name" readonly class="wide-input" />
-                  </clr-input-container>
-                  <clr-input-container>
-                    <label>Type</label>
-                    <input clrInput placeholder="type" name="robotType" [(ngModel)]="currentRobot.robotType" readonly
-                      class="wide-input" />
-                  </clr-input-container>
-                  <clr-input-container>
-                    <label>Patient</label>
-                    <input clrInput placeholder="Robot has not been assigned" name="patient" [(ngModel)]="information.patient"
-                      readonly class="wide-input" />
-                  </clr-input-container>
-                  <clr-input-container>
-                    <label>Last Connected</label>
-                    <input clrInput placeholder="Robot has not connected to Robogen" name="lastAccess" [(ngModel)]="information.lastAccess"
-                      readonly class="wide-input" />
-                  </clr-input-container>
-                  <clr-input-container>
-                    <label>Checksum</label>
-                    <input clrInput placeholder="No scripts to download" name="checksum" [(ngModel)]="currentRobot.checksum"
-                      readonly class="wide-input" />
-                  </clr-input-container>
-                </form>
-              </div>
-              <div class="card-block">
-                <div *ngIf="currentRobot.address">
-                  <button class="btn btn-primary" (click)="connect()">
-                    Connect to Robot
-                  </button>
-                </div>
-                <div *ngIf="!currentRobot.address">
-                  Unable to connect to robot: robot must connect to Robogen first.
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="clr-col">
-            <div class="card" *ngIf="currentRobot.scripts">
-              <div class="card-header">
-                Scripts
-              </div>
-              <div class="card-block">
-                <ul class="list-unstyled">
-                  <li *ngFor="let script of currentRobot.scripts">
-                    {{script.name}}
-                  </li>
-                </ul>
-              </div>
-              <div class="card-block">
-                <a class="btn btn-outline" [href]="scriptsDownloadLocation">
-                  Download All
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+        <app-robot-details [currentRobot]="currentRobot"></app-robot-details>
       </div>
     </div>
     <nav class="sidenav">
