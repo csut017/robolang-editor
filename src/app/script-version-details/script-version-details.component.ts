@@ -24,6 +24,7 @@ export class ScriptVersionDetailsComponent implements OnInit, OnChanges {
     var lines = (event.target.innerHeight - 550) / 12;
     this.editorOptions = {
       maxLines: lines,
+      readOnly: true,
       scrollPastEnd: 0.5
     };
   }

@@ -1,7 +1,7 @@
 <h1>
   {{currentRobot.display}}
 </h1>
-<div class="clr-row">
+<div class="clr-row" *ngIf="!currentScript">
   <div class="clr-col">
     <div class="card">
       <div class="card-block">
@@ -51,7 +51,9 @@
       <div class="card-block">
         <ul class="list-unstyled">
           <li *ngFor="let script of currentRobot.scripts">
-            {{script.name}}
+            <a href="javascript://" (click)="currentScript = script">
+              {{script.name}}
+            </a>
           </li>
         </ul>
       </div>
@@ -61,5 +63,18 @@
         </a>
       </div>
     </div>
+  </div>
+</div>
+<div class="card" *ngIf="currentScript">
+  <div class="card-header">
+    {{currentScript.name}}
+  </div>
+  <div class="card-block">
+    <app-robot-script [currentScript]="currentScript"></app-robot-script>
+  </div>
+  <div class="card-block">
+    <button class="btn btn-primary" (click)="currentScript = undefined">
+      Back to Robot
+    </button>
   </div>
 </div>

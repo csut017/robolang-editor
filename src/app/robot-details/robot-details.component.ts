@@ -2,6 +2,7 @@ import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/cor
 import { Robot } from '../data/robot';
 import { environment } from 'src/environments/environment';
 import * as moment from 'moment';
+import { RobotScript } from '../data/robot-script';
 
 class RobotInformation {
   patient: string;
@@ -18,6 +19,7 @@ export class RobotDetailsComponent implements OnInit, OnChanges {
   constructor() { }
 
   @Input() currentRobot: Robot;
+  currentScript: RobotScript;
   information: RobotInformation = new RobotInformation();
   scriptsDownloadLocation: string;
 

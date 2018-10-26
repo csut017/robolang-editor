@@ -23,6 +23,7 @@ import { ScriptVersionsComponent } from './script-versions/script-versions.compo
 import { ScriptVersionDetailsComponent } from './script-version-details/script-version-details.component';
 import { BlocklyEditorComponent } from './blockly-editor/blockly-editor.component';
 import { RobotDetailsComponent } from './robot-details/robot-details.component';
+import { RobotScriptComponent } from './robot-script/robot-script.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { RobotDetailsComponent } from './robot-details/robot-details.component';
     ScriptVersionsComponent,
     ScriptVersionDetailsComponent,
     BlocklyEditorComponent,
-    RobotDetailsComponent
+    RobotDetailsComponent,
+    RobotScriptComponent
   ],
   imports: [
     HttpClientModule,
