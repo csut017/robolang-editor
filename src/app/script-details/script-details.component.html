@@ -4,7 +4,11 @@
     <input clrInput placeholder="name" name="input" [(ngModel)]="currentScript.name" required />
     <clr-control-error>This field is required!</clr-control-error>
   </clr-input-container>
-  <clr-select-container>
+  <clr-input-container>
+      <label>Group</label>
+      <input clrInput placeholder="Group Name" name="groupName" [(ngModel)]="currentScript.groupName" />
+    </clr-input-container>
+    <clr-select-container>
     <label>Category</label>
     <select clrSelect name="category" [(ngModel)]="currentScript.category">
       <option *ngFor="let category of categories" value="{{category.id}}">{{category.value}}</option>

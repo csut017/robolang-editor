@@ -140,14 +140,14 @@
     </div>
     <nav class="sidenav">
       <section class="sidenav-content">
-        <section class="nav-group collapsible">
+        <section class="nav-group collapsible" *ngFor="let group of groups">
           <input id="scripts" type="checkbox">
           <label for="scripts">
             <clr-icon shape="scroll"></clr-icon>
-            Scripts
+            {{group.name}}
           </label>
           <ul class="nav-list">
-            <li *ngFor="let script of scripts">
+            <li *ngFor="let script of group.scripts">
               <a href="javascript://" [class.active]="currentScript && (currentScript.id==script.id)" class="nav-link"
                 (click)="changeScript(script)">
                 <span [class.inactive]="script.flags">

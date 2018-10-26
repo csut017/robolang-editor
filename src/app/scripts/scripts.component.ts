@@ -12,6 +12,16 @@ import * as moment from 'moment';
 import { ScriptVersion } from '../data/script-version';
 import { ScriptSettings } from '../data/script-settings';
 
+class ScriptGroup {
+  name: string;
+  scripts: Script[];
+
+  constructor(name: string) {
+    this.name = name;
+    this.scripts = [];
+  }
+}
+
 @Component({
   selector: 'app-scripts',
   templateUrl: './scripts.component.html',
@@ -20,6 +30,7 @@ import { ScriptSettings } from '../data/script-settings';
 export class ScriptsComponent implements OnInit {
 
   settings: ScriptSettings;
+  groups: ScriptGroup[];
   scripts: Script[];
   currentScript: Script;
   currentParameter: ScriptParameter;
@@ -87,6 +98,7 @@ export class ScriptsComponent implements OnInit {
               script.categoryName = this.settings.findCategory(script.category).value;
               return script;
             });
+            this.generateGroups();
             const id = this.route.snapshot.paramMap.get('id');
             if (id === 'new') {
               this.startNewScript();
@@ -96,6 +108,23 @@ export class ScriptsComponent implements OnInit {
             }
           });
       });
+  }
+
+  generateGroups(): void {
+    this.groups = [];
+    var groups = {};
+    this.scripts.forEach(script => {
+      const groupName = script.groupName || ' Scripts';
+      var group = groups[groupName];
+      if (!group) {
+        group = new ScriptGroup(groupName);
+        this.groups.push(group);
+        groups[groupName] = group;
+      }
+      group.scripts.push(script);
+    });
+    this.groups.sort((a, b) => a.name == b.name ? 0 : a.name > b.name ? 1 : -1);
+    this.groups.forEach(group => group.scripts.sort((a, b) => a.name == b.name ? 0 : a.name > b.name ? 1 : -1));
   }
 
   startNewScript(): void {
@@ -160,6 +189,7 @@ export class ScriptsComponent implements OnInit {
             script.isNew = true;
             this.currentScript.original = new Script();
             this.currentScript.original.id = script.id;
+            this.currentScript.original.groupName = script.groupName;
             this.currentScript.isAdding = false;
             this.currentScript.parameters = result.data.parameters;
             this.currentScript.resources = result.data.resources;
@@ -167,9 +197,11 @@ export class ScriptsComponent implements OnInit {
           } else {
             if (script.original) {
               this.currentScript = this.currentScript.original;
+              this.currentScript.groupName = script.groupName;
               this.changeScript(this.currentScript);
             }
           }
+          this.generateGroups();
         } else {
           // TODO: Use a modal dialog
           alert(result.msg);
@@ -202,6 +234,7 @@ export class ScriptsComponent implements OnInit {
             this.scripts.splice(index, 1);
           }
           this.router.navigate([`/scripts`]);
+          this.generateGroups();
         } else {
           // TODO: Use a modal dialog
           alert(result.msg);

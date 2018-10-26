@@ -15,6 +15,7 @@ export class Script {
     format: number;
     category: number;
     categoryName: string;
+    groupName: string;
     isNew: boolean;
     isAdding: boolean;
     versions: ScriptVersion[];
