@@ -6,6 +6,7 @@ export class ScriptSettings {
     categories: ScriptValue[];
     dataTypes: ScriptValue[];
     resourceTypes: ScriptValue[];
+    oldResourceTypes: ScriptValue[];
     languages: Language[];
     editors: Editor[];
 
@@ -26,7 +27,10 @@ export class ScriptSettings {
     }
 
     findResourceType(id: number): ScriptValue {
-        const resType = this.resourceTypes.find(rt => rt.id == id);
+        var resType = this.resourceTypes.find(rt => rt.id == id);
+        if (!resType) {
+            resType = this.oldResourceTypes.find(rt => rt.id == id);
+        }
         return resType;
     }
 }

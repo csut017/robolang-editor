@@ -61,7 +61,12 @@ export class ScriptSettingsService {
         tap(_ => this.log('Fetched dataTypes')),
         catchError(this.handleError('getDataTypes', []))
       );
-    let resourceTypes = this.http.get<any>(`${environment.baseURL}resourceTypes?l=100`)
+      let resourceTypes = this.http.get<any>(`${environment.baseURL}resourceTypes?l=100`)
+      .pipe(
+        tap(_ => this.log('Fetched resourceTypes')),
+        catchError(this.handleError('getResourceTypes', []))
+      );
+    let resourceTypes2 = this.http.get<any>(`${environment.baseURL}resourceTypes/v2?l=100`)
       .pipe(
         tap(_ => this.log('Fetched resourceTypes')),
         catchError(this.handleError('getResourceTypes', []))
@@ -72,14 +77,16 @@ export class ScriptSettingsService {
         catchError(this.handleError('languages', []))
       );
     this.log('Fetching script settings');
-    return forkJoin([categories, dataTypes, resourceTypes, languages])
+    return forkJoin([categories, dataTypes, resourceTypes, languages, resourceTypes2])
       .pipe(
         map(data => {
           var settings = new ScriptSettings();
           settings.categories = data[0].mappings;
           settings.dataTypes = data[1].mappings;
-          settings.resourceTypes = data[2].mappings;
+          settings.oldResourceTypes = data[2].mappings;
+          settings.oldResourceTypes.forEach(v => v.old = true);
           settings.languages = data[3].items;
+          settings.resourceTypes = data[4].mappings;
           this.selectedLanguage = settings.languages[0];
           this.selectedEditor = settings.editors.find(ed => ed.isDefault);
           return settings;

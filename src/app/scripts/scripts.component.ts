@@ -256,7 +256,11 @@ export class ScriptsComponent implements OnInit {
 
   private initialiseScript(script): void {
     Script.unpack(script);
-    (script.resources || []).forEach(res => res.resourceTypeName = this.settings.findResourceType(res.resourceType).value);
+    (script.resources || []).forEach(res => {
+      const resType = this.settings.findResourceType(res.resourceType);
+      res.resourceTypeName = resType.value;
+      res.isOldType = !!resType.old;
+    });
     (script.parameters || []).forEach(param => {
       if (param.dataType) param.dataTypeName = this.settings.findDataType(param.dataType).value;
       ScriptParameter.unpack(param);

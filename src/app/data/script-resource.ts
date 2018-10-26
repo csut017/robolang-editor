@@ -6,6 +6,7 @@ export class ScriptResource {
     resourceTypeName: string;
     contents: ResourceContent[];
     isLoaded: boolean;
+    isOldType: boolean;
 }
 
 export class ResourceContent {

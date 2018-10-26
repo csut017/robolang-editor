@@ -71,7 +71,7 @@
                     <button (click)="openResource(resource)" class="clr-treenode-link" [class.active]="view.currentView=='resource' && currentResource == resource">
                       <clr-icon shape="file"></clr-icon>
                       {{resource.name}}
-                      <span class="badge">{{resource.resourceTypeName}}</span>
+                      <span class="badge" [class.badge-info]="!resource.isOldType" [class.badge-warning]="resource.isOldType">{{resource.resourceTypeName}}</span>
                     </button>
                   </clr-tree-node>
                 </ng-template>
