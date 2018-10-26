@@ -64,7 +64,7 @@ const ArgumentType = {
   String: 'TEXT' as 'TEXT',
   Number: 'NUMBER' as 'NUMBER',
   Variable: 'VARIABLE' as 'VARIABLE',
-  Boolean: 'YES/NO' as 'YES/NO',
+  Boolean: 'TRUE/FALSE' as 'TRUE/FALSE',
   Time: 'TIME' as 'TIME',
   Type: 'TYPE' as 'TYPE',
   Any: 'ANY' as 'ANY'
@@ -179,7 +179,8 @@ export class ScriptHelpService {
         .addArgument('variable', ArgumentType.Variable)
         .addArgument('from', ArgumentType.Any, true),
       new HelpInfo('showScreen', 'Displays a screen.')
-        .addArgument('screen', ArgumentType.String, true),
+        .addArgument('screen', ArgumentType.String, true)
+        .addArgument('say', ArgumentType.Boolean),
       new HelpInfo('switch', 'Chooses between one or more items', true)
         .addArgument('value', ArgumentType.Any, true)
         .addChild('default', ChildNumber.OneOrZero)

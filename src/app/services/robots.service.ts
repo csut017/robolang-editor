@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MessageService } from './message.service';
-import { Observable, of } from 'rxjs';
+import { Observable, of, forkJoin } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment'
 import { Robot } from '../data/robot';
@@ -32,6 +32,29 @@ export class RobotsService {
       .pipe(
         tap(_ => this.log(`Fetched robot with id of ${id}`)),
         catchError(this.handleError<Robot>(`getRobot id=${id}`))
+      );
+  }
+
+  getScriptsForRobot(robot: Robot): Observable<Robot> {
+    const url = environment.baseURL + `robots/${robot.id}/scripts`;
+    this.log(`Fetching scripts for robot with id of ${robot.id}`);
+    var scripts = this.http.get<any>(url)
+      .pipe(
+        tap(_ => this.log(`Fetched scripts for robot with id of ${robot.id}`)),
+        catchError(this.handleError<Robot>(`getScriptsForRobot id=${robot.id}`))
+      );
+      var checksum = this.http.get<any>(`${url}/checksum`)
+      .pipe(
+        tap(_ => this.log(`Fetched checksum for robot with id of ${robot.id}`)),
+        catchError(this.handleError<Robot>(`getScriptsForRobot id=${robot.id}`))
+      );
+    return forkJoin([scripts, checksum])
+      .pipe(
+        map(data => {
+          robot.scripts = data[0].items;
+          robot.checksum = data[1].hash;
+          return robot;
+        })
       );
   }
 

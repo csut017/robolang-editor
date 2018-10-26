@@ -1,3 +1,5 @@
+import { RobotScript } from './robot-script'
+
 export class Robot {
     id: number;
     display: string;
@@ -9,6 +11,10 @@ export class Robot {
     // Patient details
     patient: string;
     nhi: string;
+
+    // Download details
+    checksum: string;
+    scripts: RobotScript[];
 
     // Internal information
     isLoaded: boolean;

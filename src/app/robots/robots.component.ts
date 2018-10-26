@@ -58,6 +58,12 @@ export class RobotsComponent implements OnInit {
           if (robot.lastAccess) {
             this.information.lastAccess = moment(robot.lastAccess).fromNow();
           }
+
+          this.robotService.getScriptsForRobot(this.currentRobot)
+            .subscribe(r => {
+              this.currentRobot.checksum = r.checksum;
+              this.currentRobot.scripts = r.scripts;
+            });
         });
     }
     if (robot) {
