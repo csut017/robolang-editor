@@ -89,9 +89,10 @@ export class ScriptService {
   }
 
   private update(script: Script): Observable<any> {
-    const url = environment.baseURL + `robotScripts/v2/${script.id}`;
+    const url = environment.baseURL + `robotScripts/${script.id}`;
+    const url2 = environment.baseURL + `robotScripts/v2/${script.id}`;
     this.log(`Updating script with id of ${script.id}`);
-    return this.http.put<any>(url, script)
+    return this.http.put<any>(url2, script)
       .pipe(
         tap(_ => this.log(`Updated script with id of ${script.id}`)),
         mergeMap(result => {
