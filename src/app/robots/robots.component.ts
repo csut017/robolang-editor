@@ -3,6 +3,7 @@ import { Robot } from '../data/robot';
 import { RobotsService } from '../services/robots.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
+import { environment } from 'src/environments/environment';
 
 class RobotInformation {
   patient: string;
@@ -25,6 +26,7 @@ export class RobotsComponent implements OnInit {
   isLoading: boolean = false;
   connectionError: boolean = false;
   information: RobotInformation = new RobotInformation();
+  scriptsDownloadLocation: string;
 
   ngOnInit() {
     this.getRobots();
@@ -59,11 +61,16 @@ export class RobotsComponent implements OnInit {
             this.information.lastAccess = moment(robot.lastAccess).fromNow();
           }
 
-          this.robotService.getScriptsForRobot(this.currentRobot)
-            .subscribe(r => {
-              this.currentRobot.checksum = r.checksum;
-              this.currentRobot.scripts = r.scripts;
-            });
+          this.currentRobot.checksum = undefined;
+          this.currentRobot.scripts = undefined;
+          if (robot.patient) {
+            this.scriptsDownloadLocation = environment.baseURL + `robots/${this.currentRobot.id}/scripts/all`;
+            this.robotService.getScriptsForRobot(this.currentRobot)
+              .subscribe(r => {
+                this.currentRobot.checksum = r.checksum;
+                this.currentRobot.scripts = r.scripts;
+              });
+          }
         });
     }
     if (robot) {
