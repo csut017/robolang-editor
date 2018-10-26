@@ -21,12 +21,6 @@ import { ScriptParameterDetailsComponent } from './script-parameter-details/scri
 import { AceEditorModule } from 'ng2-ace-editor';
 import { ScriptVersionsComponent } from './script-versions/script-versions.component';
 import { ScriptVersionDetailsComponent } from './script-version-details/script-version-details.component';
-import { RobotInterfaceComponent } from './robot-interface/robot-interface.component';
-import { RobotSchedulesComponent } from './robot-schedules/robot-schedules.component';
-import { RobotWaitStateComponent } from './robot-wait-state/robot-wait-state.component';
-import { RobotDebugComponent } from './robot-debug/robot-debug.component';
-import { RobotScriptsComponent } from './robot-scripts/robot-scripts.component';
-import { RobotCommandsComponent } from './robot-commands/robot-commands.component';
 import { BlocklyEditorComponent } from './blockly-editor/blockly-editor.component';
 
 @NgModule({
@@ -44,12 +38,6 @@ import { BlocklyEditorComponent } from './blockly-editor/blockly-editor.componen
     ScriptParameterDetailsComponent,
     ScriptVersionsComponent,
     ScriptVersionDetailsComponent,
-    RobotInterfaceComponent,
-    RobotSchedulesComponent,
-    RobotWaitStateComponent,
-    RobotDebugComponent,
-    RobotScriptsComponent,
-    RobotCommandsComponent,
     BlocklyEditorComponent
   ],
   imports: [

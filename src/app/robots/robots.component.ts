@@ -2,7 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Robot } from '../data/robot';
 import { RobotsService } from '../services/robots.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RobotCommunicationsService, RobotClient } from '../services/robot-communications.service';
+import * as moment from 'moment';
+
+class RobotInformation {
+  patient: string;
+  lastAccess: string;
+}
 
 @Component({
   selector: 'app-robots',
@@ -13,45 +18,16 @@ export class RobotsComponent implements OnInit {
 
   constructor(private robotService: RobotsService,
     private route: ActivatedRoute,
-    private router: Router,
-    private communications: RobotCommunicationsService) { }
+    private router: Router) { }
 
   robots: Robot[];
   currentRobot: Robot;
   isLoading: boolean = false;
-  client: RobotClient;
-  connected: boolean = false;
   connectionError: boolean = false;
+  information: RobotInformation = new RobotInformation();
 
   ngOnInit() {
     this.getRobots();
-  }
-
-  connect(): void {
-    const robotName = this.currentRobot.display;
-    this.log(`Connecting to robot ${robotName}`);
-    this.communications.connect(this.currentRobot)
-      .subscribe(client => {
-        if (client.canConnect()) {
-          this.log('Opening connection');
-          var connecting = true;
-          client.connect();
-          client.onClosed.subscribe(_ => {
-            this.log(`Disconnected to ${robotName}`);
-            this.connected = false;
-            this.connectionError = connecting;
-          });
-          client.onConnected.subscribe(_ => {
-            this.log(`Connected to ${robotName}`);
-            this.connected = true;
-            connecting = false;
-          })
-          this.client = client;
-        } else {
-          this.log(`Unable to connect to ${robotName}`);
-          this.connectionError = true;
-        }
-      });
   }
 
   getRobots(): void {
@@ -68,12 +44,20 @@ export class RobotsComponent implements OnInit {
     this.currentRobot = robot;
     if (robot && robot.id && !robot.isLoaded) {
       this.isLoading = true;
+      this.information = new RobotInformation();
       const original = robot;
       this.robotService.getRobot(robot.id)
         .subscribe(robot => {
           this.currentRobot = robot;
           this.currentRobot.original = original
           this.isLoading = false;
+          if (robot.patient) {
+            this.information.patient = robot.patient;
+            if (robot.nhi) this.information.patient += ' [' + robot.nhi + ']';
+          }
+          if (robot.lastAccess) {
+            this.information.lastAccess = moment(robot.lastAccess).fromNow();
+          }
         });
     }
     if (robot) {
@@ -81,13 +65,9 @@ export class RobotsComponent implements OnInit {
     }
   }
 
-  private log(message: string, data?: any) {
-    if (data) {
-      console.groupCollapsed('[Robots] ' + message);
-      console.log(data);
-      console.groupEnd();
-    } else {
-      console.log('[Robots] ' + message);
+  connect(): void {
+    if (this.currentRobot.address) {
+      window.open(this.currentRobot.address.replace('/ping', ''));
     }
   }
 }
