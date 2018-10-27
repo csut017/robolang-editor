@@ -10,6 +10,10 @@ import { ScriptResourceService } from '../services/script-resource.service';
 import "brace";
 import "brace/theme/chrome";
 import { ScriptSettings } from '../data/script-settings';
+import { Resource } from '../data/resource';
+import { debounceTime } from 'rxjs/operators';
+import { ResourcesService } from '../services/resources.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-script-resource-details',
@@ -18,17 +22,26 @@ import { ScriptSettings } from '../data/script-settings';
 })
 export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
 
-  settings: ScriptSettings;
-  resourceTypes: ScriptValue[];
-  currentContent: ResourceContent;
-
   constructor(private settingsService: ScriptSettingsService,
     private resourceService: ScriptResourceService,
-    private scriptView: ScriptViewService) { }
+    private scriptView: ScriptViewService,
+    private resourcesService: ResourcesService) { }
 
   @Input() currentScript: Script;
   @Input() currentResource: ScriptResource;
   @Output() saving = new EventEmitter<Script>();
+
+  settings: ScriptSettings;
+  resourceTypes: ScriptValue[];
+  currentContent: ResourceContent;
+  currentResourceType: ScriptValue;
+  resources: Resource[];
+  resourceSearch: string;
+  searchObservable = new EventEmitter<string>();
+  previewTypes: { [index: number]: ScriptValue } = {};
+  previewTypesLoaded: boolean = false;
+  previewActive: boolean = true;
+  reviewResourceURL: string;
 
   ngOnInit() {
     this.settingsService.getSettings()
@@ -37,7 +50,19 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
         this.settings = settings;
         this.loadContent();
       });
+    this.resourcesService.listTypes()
+      .subscribe(types => {
+        types.forEach(typ => this.previewTypes[typ.id] = typ);
+        this.previewResource();
+      });
     this.settingsService.languageChanged.subscribe(_ => this.loadContent());
+    this.searchObservable
+      .pipe(
+        debounceTime(300)
+      ).subscribe(search => {
+        this.resourcesService.getResources(20, 0, search)
+          .subscribe(res => this.resources = res);
+      });
   }
 
   save(): void {
@@ -55,7 +80,7 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
 
   private loadContent(): void {
     if (this.currentResource.isLoaded) {
-      this.loadLanguageContent(this.currentResource);
+      this.loadLanguageContent();
       return;
     }
 
@@ -64,19 +89,20 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
         .subscribe(resource => {
           this.currentResource.isLoaded = true;
           this.currentResource.contents = resource.contents;
-          this.loadLanguageContent(this.currentResource);
+          this.loadLanguageContent();
         });
     } else {
       this.currentResource.isLoaded = true;
-      this.loadLanguageContent(this.currentResource);
+      this.loadLanguageContent();
     }
   }
 
-  private loadLanguageContent(resource: ScriptResource): void {
+  private loadLanguageContent(): void {
     if (!this.settings) return;
     const langId = this.settingsService.selectedLanguage.id;
     this.currentResource.contents = this.currentResource.contents || [];
     this.currentContent = this.currentResource.contents.find(con => con.languageID == langId);
+    this.onResourceChanged();
 
     if (!this.currentContent) {
       this.currentContent = new ResourceContent();
@@ -88,5 +114,26 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
 
   ngOnChanges(_: SimpleChanges) {
     if (this.settings) this.loadContent();
+  }
+
+  onResourceChanged() {
+    this.currentResourceType = this.settings.findResourceType(this.currentResource.resourceType);
+    this.previewResource();
+  }
+
+  searchForResources(): void {
+    this.searchObservable.emit(this.resourceSearch);
+  }
+
+  selectResource(resource: Resource): void {
+    this.previewActive = true;
+    this.currentContent.resource = resource.url;
+    this.previewResource();
+  }
+
+  previewResource(): void {
+    if (this.currentContent && this.currentContent.resource) {
+      this.reviewResourceURL = `${environment.resourceURL}${this.currentContent.resource}`;
+    }
   }
 }
