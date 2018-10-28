@@ -42,6 +42,8 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
   previewTypesLoaded: boolean = false;
   previewActive: boolean = true;
   reviewResourceURL: string;
+  newResourceUrl: string;
+  resourceToUpload: any;
 
   ngOnInit() {
     this.settingsService.getSettings()
@@ -52,7 +54,7 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
       });
     this.resourcesService.listTypes()
       .subscribe(types => {
-        types.forEach(typ => this.previewTypes[typ.id] = typ);
+        types.forEach(typ => this.previewTypes[typ.value] = typ);
         this.previewResource();
       });
     this.settingsService.languageChanged.subscribe(_ => this.loadContent());
@@ -60,8 +62,15 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
       .pipe(
         debounceTime(300)
       ).subscribe(search => {
-        this.resourcesService.getResources(20, 0, search)
-          .subscribe(res => this.resources = res);
+        if (search) {
+          this.resourcesService.getResources(20, 0, search)
+            .subscribe(res => {
+              const resType = this.settings.findResourceType(this.currentResource.resourceType);
+              var rtID = this.previewTypes[resType.value];
+              rtID = rtID ? rtID.id : -1;
+              this.resources = (res || []).filter(r => r.resourceType == rtID);
+            });
+        }
       });
   }
 
@@ -119,6 +128,7 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
   onResourceChanged() {
     this.currentResourceType = this.settings.findResourceType(this.currentResource.resourceType);
     this.previewResource();
+    this.searchObservable.emit(this.resourceSearch);
   }
 
   searchForResources(): void {
@@ -135,5 +145,22 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
     if (this.currentContent && this.currentContent.resource) {
       this.reviewResourceURL = `${environment.resourceURL}${this.currentContent.resource}`;
     }
+  }
+
+  uploadResource(): void {
+    const resType = this.settings.findResourceType(this.currentResource.resourceType);
+    var rtID = this.previewTypes[resType.value];
+    rtID = rtID ? rtID.id : -1;
+    this.resourcesService.addResource(this.newResourceUrl, rtID)
+      .subscribe(res => {
+        this.resourcesService.uploadResourceData(res, this.resourceToUpload)
+          .subscribe(_ => {
+            this.selectResource(res);
+          });
+      });
+  }
+
+  storeResource(event): void {
+    this.resourceToUpload = event.target.files[0];
   }
 }

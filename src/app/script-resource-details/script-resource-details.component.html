@@ -37,7 +37,13 @@
                       Preview
                     </div>
                     <div class="card-block">
-                      <img src="{{reviewResourceURL}}" style="width:100%;">
+                      <img src="{{reviewResourceURL}}" style="width:100%;" *ngIf="currentResourceType.value=='Image'">
+                      <video style="width:100%;" controls *ngIf="currentResourceType.value=='Video'">
+                        <source src="{{reviewResourceURL}}" type="video/mp4">
+                      </video>
+                      <audio style="width:100%;" controls *ngIf="currentResourceType.value=='Audio'">
+                        <source src="{{reviewResourceURL}}">
+                      </audio>
                     </div>
                   </div>
                 </div>
@@ -66,11 +72,14 @@
               <div class="clr-col">
                 <clr-input-container>
                   <label>Upload Resource</label>
-                  <input clrInput placeholder="Resource URL" name="urlName" [(ngModel)]="newResource" />
+                  <input clrInput placeholder="Resource URL" name="urlName" [(ngModel)]="newResourceUrl" />
                 </clr-input-container>
                 <div class="clr-form-control">
                   <label class="clr-control-label">File</label>
-                  <input placeholder="File to upload" name="uploadFile" type="file" class="clr-input" />
+                  <input placeholder="File to upload" name="uploadFile" type="file" class="clr-input" (change)="storeResource($event)" />
+                </div>
+                <div>
+                  <button class="btn btn-outline pull-right" (click)="uploadResource()">Add Resource</button>
                 </div>
               </div>
             </div>

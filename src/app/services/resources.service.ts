@@ -33,8 +33,40 @@ export class ResourcesService {
     return this.http.get<any>(url)
       .pipe(
         tap(_ => this.log('Fetched resource types')),
-        catchError(this.handleError('lisTypes', [])),
+        catchError(this.handleError('listTypes', [])),
         map(data => data.mappings)
+      );
+  }
+
+  addResource(name: string, typeID: number): Observable<Resource> {
+    var url = `${environment.baseURL}resources`;
+    const data = {
+      resourceType: typeID,
+      url: name
+    };
+    this.log('Adding resource');
+    return this.http.post<any>(url, data)
+      .pipe(
+        tap(_ => this.log('Added resource')),
+        catchError(this.handleError<Resource>('addResource')),
+        map<any, Resource>(data => data.data)
+      );
+  }
+
+  uploadResourceData(resource: Resource, data: any): Observable<Resource>{
+    var fileData = new FormData();
+    fileData.append("fileData", data);
+    fileData.append("filename", resource.url);
+    const url = `${environment.resourceURL}${resource.url}`;
+    this.log('Uploading resource');
+    return this.http.post<any>(url, data)
+      .pipe(
+        tap(_ => this.log('Uploaded resource')),
+        catchError(this.handleError<Resource>('addResource')),
+        map<any, Resource>(resp => {
+          console.log(resp);
+          return resource;
+        })
       );
   }
   
