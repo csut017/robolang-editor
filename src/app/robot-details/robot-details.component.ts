@@ -28,6 +28,7 @@ export class RobotDetailsComponent implements OnInit, OnChanges {
 
   ngOnChanges(_: SimpleChanges) {
     this.information = new RobotInformation();
+    this.currentScript = undefined;
     if (this.currentRobot.patient) {
       this.information.patient = this.currentRobot.patient;
       if (this.currentRobot.nhi) this.information.patient += ' [' + this.currentRobot.nhi + ']';

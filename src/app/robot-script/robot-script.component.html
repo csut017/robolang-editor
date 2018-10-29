@@ -1,11 +1,14 @@
 <form clrForm>
-  <clr-input-container>
+  <clr-input-container *ngIf="currentScript.source">
     <label>Source</label>
     <input clrInput placeholder="source" name="source" [(ngModel)]="currentScript.source" readonly />
   </clr-input-container>
+  <clr-input-container *ngIf="currentScript.type">
+    <label>Type</label>
+    <input clrInput placeholder="type" name="type" [(ngModel)]="currentScript.type" readonly />
+  </clr-input-container>
   <div class="clr-form-control">
-    <label class="clr-control-label">Script</label>
-    <ace-editor [(text)]="currentScript.script" [options]="editorOptions" theme="chrome" mode="python" style="min-height: calc(100vh - 500px); margin-bottom: 10px; width:100%;">
+    <ace-editor [(text)]="content" [options]="editorOptions" theme="chrome" mode="python" style="min-height: calc(100vh - 500px); margin-bottom: 10px; width:100%;">
     </ace-editor>
   </div>
 </form>

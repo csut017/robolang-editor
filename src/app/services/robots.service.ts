@@ -35,6 +35,20 @@ export class RobotsService {
       );
   }
 
+  getResourcesForRobot(robot: Robot): Observable<Robot> {
+    const url = environment.baseURL + `robots/${robot.id}/scripts/resources`;
+    this.log(`Fetching script resources for robot with id of ${robot.id}`);
+    return this.http.get<any>(url)
+      .pipe(
+        tap(_ => this.log(`Fetched script resources for robot with id of ${robot.id}`)),
+        catchError(this.handleError<Robot>(`getResourcesForRobot id=${robot.id}`)),
+        map(data => {
+          robot.resources = data.items;
+          return robot;
+        })
+      );
+  }
+
   getScriptsForRobot(robot: Robot): Observable<Robot> {
     const url = environment.baseURL + `robots/${robot.id}/scripts`;
     this.log(`Fetching scripts for robot with id of ${robot.id}`);

@@ -1,4 +1,5 @@
 import { RobotScript } from './robot-script'
+import { RobotResource } from './robot-resource';
 
 export class Robot {
     id: number;
@@ -15,6 +16,7 @@ export class Robot {
     // Download details
     checksum: string;
     scripts: RobotScript[];
+    resources: RobotResource[];
 
     // Internal information
     isLoaded: boolean;

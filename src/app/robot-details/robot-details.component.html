@@ -45,17 +45,34 @@
   </div>
   <div class="clr-col">
     <div class="card" *ngIf="currentRobot.scripts">
-      <div class="card-header">
-        Scripts
-      </div>
       <div class="card-block">
-        <ul class="list-unstyled">
-          <li *ngFor="let script of currentRobot.scripts">
-            <a href="javascript://" (click)="currentScript = script">
-              {{script.name}}
-            </a>
-          </li>
-        </ul>
+        <clr-tabs>
+          <clr-tab>
+            <button clrTabLink id="link1">Scripts</button>
+            <clr-tab-content *clrIfActive>
+              <ul class="list-unstyled">
+                <li *ngFor="let script of currentRobot.scripts">
+                  <a href="javascript://" (click)="currentScript = script">
+                    {{script.name}}
+                  </a>
+                </li>
+              </ul>
+            </clr-tab-content>
+          </clr-tab>
+          <clr-tab>
+            <button clrTabLink>Resources</button>
+            <clr-tab-content *clrIfActive>
+              <ul class="list-unstyled">
+                <li *ngFor="let resource of currentRobot.resources">
+                  <a href="javascript://" (click)="currentScript = resource">
+                    <span *ngIf="resource.parent">{{resource.parent}}:</span>
+                    {{resource.name}} [{{resource.type}}]
+                  </a>
+                </li>
+              </ul>
+            </clr-tab-content>
+          </clr-tab>
+        </clr-tabs>
       </div>
       <div class="card-block">
         <a class="btn btn-outline" [href]="scriptsDownloadLocation">

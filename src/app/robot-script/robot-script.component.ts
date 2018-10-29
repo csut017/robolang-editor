@@ -1,17 +1,17 @@
-import { Component, OnInit, Input, HostListener } from '@angular/core';
-import { RobotScript } from '../data/robot-script';
+import { Component, OnInit, Input, HostListener, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-robot-script',
   templateUrl: './robot-script.component.html',
   styleUrls: ['./robot-script.component.css']
 })
-export class RobotScriptComponent implements OnInit {
+export class RobotScriptComponent implements OnInit, OnChanges {
 
   constructor() { }
 
-  @Input() currentScript: RobotScript;
+  @Input() currentScript: any;
   editorOptions: any;
+  content: string;
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
@@ -29,4 +29,10 @@ export class RobotScriptComponent implements OnInit {
     });
   }
 
+  ngOnChanges(_: SimpleChanges) {
+    this.content = this.currentScript.script
+      || this.currentScript.resource
+      || this.currentScript.file
+      || this.currentScript.url;
+  }
 }

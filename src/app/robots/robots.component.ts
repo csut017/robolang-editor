@@ -51,6 +51,10 @@ export class RobotsComponent implements OnInit {
                 this.currentRobot.checksum = r.checksum;
                 this.currentRobot.scripts = r.scripts;
               });
+            this.robotService.getResourcesForRobot(this.currentRobot)
+              .subscribe(r => {
+                this.currentRobot.resources = r.resources;
+              });
           }
         });
     }
