@@ -22,6 +22,12 @@ class ScriptGroup {
   }
 }
 
+const resetMap: {[index: string]: string} = {
+  'parameter': 'parameters',
+  'resource': 'resources',
+  'version': 'versions'
+};
+
 @Component({
   selector: 'app-scripts',
   templateUrl: './scripts.component.html',
@@ -139,6 +145,8 @@ export class ScriptsComponent implements OnInit {
 
   changeScript(script: Script): void {
     this.currentScript = script;
+    const newView = resetMap[this.view.currentView] || this.view.currentView;
+    this.scriptView.changeView(newView);
     if (script && script.id && !script.isLoaded) {
       this.isLoading = true;
       const original = script;
