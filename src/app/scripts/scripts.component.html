@@ -40,12 +40,12 @@
                   Script
                 </button>
               </clr-tree-node>
-              <clr-tree-node>
+              <!-- <clr-tree-node>
                 <button class="clr-treenode-link" [class.active]="view.currentView=='blockly'" (click)="scriptView.changeView('blockly')">
                   <clr-icon shape="blocks-group" class="is-solid"></clr-icon>
                   Blocks
                 </button>
-              </clr-tree-node>
+              </clr-tree-node> -->
               <clr-tree-node *ngIf="!currentScript.isAdding">
                 <button class="clr-treenode-link" [class.active]="view.currentView=='parameters'" (click)="scriptView.changeView('parameters')">
                   <clr-icon shape="view-list"></clr-icon>
@@ -107,9 +107,9 @@
             <div *ngIf="!isLoading && view.currentView=='script'">
               <app-script-editor [currentScript]="currentScript" (saving)="save($event)"></app-script-editor>
             </div>
-            <div *ngIf="!isLoading && view.currentView=='blockly'">
+            <!-- <div *ngIf="!isLoading && view.currentView=='blockly'">
               <app-blockly-editor [currentScript]="currentScript" (saving)="save($event)"></app-blockly-editor>
-            </div>
+            </div> -->
             <div *ngIf="!isLoading && view.currentView=='parameters'">
               <app-script-parameters [currentScript]="currentScript"></app-script-parameters>
             </div>
@@ -163,14 +163,14 @@
           <clr-icon shape="plus-circle"></clr-icon>
           Start New Script
         </a>
-        <a href="javascript://" class="nav-link" (click)="exportScripts()">
+        <!-- <a href="javascript://" class="nav-link" (click)="exportScripts()">
           <clr-icon shape="download"></clr-icon>
           Export Scripts
         </a>
         <a href="javascript://" class="nav-link" (click)="importScripts()">
           <clr-icon shape="upload"></clr-icon>
           Import Scripts
-        </a>
+        </a> -->
       </section>
     </nav>
   </div>
