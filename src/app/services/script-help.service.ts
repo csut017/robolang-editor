@@ -113,6 +113,11 @@ export class ScriptHelpService {
         .addChild('*', ChildNumber.OneOrMore)
         .addParent('switch')
         .addParent('wait'),
+      new HelpInfo('defaultValue', 'Defines a default value for any functions.')
+        .addArgument('function', ArgumentType.String, true)
+        .addArgument('argument', ArgumentType.String, true)
+        .addArgument('value', ArgumentType.Any, true)
+        .addParent('-'),
       new HelpInfo('doNothing', 'Does nothing'),
       new HelpInfo('equal', 'Checks if the condition matches the input.')
         .addArgument('condition', ArgumentType.Any, true)
