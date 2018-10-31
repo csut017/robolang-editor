@@ -9,6 +9,7 @@ import "../roboLang";
 import { AceEditorComponent } from 'ng2-ace-editor';
 import { HelpInfo, ScriptHelpService } from '../services/script-help.service';
 import { debounceTime, tap } from 'rxjs/operators';
+import { ScriptService } from '../services/script.service';
 
 class statusInfo {
   type: string;
@@ -42,7 +43,8 @@ class statusInfo {
 export class ScriptEditorComponent implements OnInit, OnChanges {
 
   constructor(private validationService: ValidationService,
-    private scriptHelp: ScriptHelpService) { }
+    private scriptHelp: ScriptHelpService,
+    private scriptService: ScriptService) { }
 
   help: HelpInfo[];
   status: statusInfo;
@@ -61,6 +63,22 @@ export class ScriptEditorComponent implements OnInit, OnChanges {
       maxLines: lines,
       scrollPastEnd: 0.5
     };
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent): void {
+    switch (event.key) {
+      case 'F':
+      case 'f':
+        if (event.altKey && event.shiftKey) {
+          if (this.currentScript) {
+            this.scriptService.format(this.currentScript.script)
+              .subscribe(script => this.currentScript.script = script);
+          }
+          event.preventDefault();
+        }
+        break;
+    }
   }
 
   ngOnInit() {

@@ -61,13 +61,28 @@ export class ScriptService {
     }
   }
 
-  delete(script: Script): any {
+  delete(script: Script): Observable<any> {
     const url = environment.baseURL + `robotScripts/${script.id}`;
     this.log(`Deleting script with id of ${script.id}`);
     return this.http.delete<any>(url)
       .pipe(
         tap(_ => this.log(`Deleted script with id of ${script.id}`)),
         catchError(this.returnError(`delete id=${script.id}`))
+      );
+  }
+
+  format(script: string): Observable<string> {
+    const url = `${environment.baseURL}robotScripts/format`;
+    this.log(`Formating script`);
+    return this.http.post(url, {
+      script: script
+    })
+      .pipe(
+        tap(_ => this.log(`Formatted script`)),
+        catchError(this.handleError<Script>(`format`)),
+        map<any, string>(res => {
+          return res.script;
+        })
       );
   }
 
@@ -97,14 +112,14 @@ export class ScriptService {
         tap(_ => this.log(`Updated script with id of ${script.id}`)),
         mergeMap(result => {
           const resourcesToSave = (result.data.resources || []).filter(res => res.contents);
-          if ((result.status != 'Ok') || !(resourcesToSave.length || script.deletedResources.length || script.deletedParameters.length)){
+          if ((result.status != 'Ok') || !(resourcesToSave.length || script.deletedResources.length || script.deletedParameters.length)) {
             return of(result);
           }
 
           const updates = resourcesToSave.map(res => this.updateResource(url, res))
             .concat(script.deletedResources.map(res => this.deleteResource(url, res)))
             .concat(script.deletedParameters.map(param => this.deleteParameter(url, param)));
-          
+
           return forkJoin(updates)
             .pipe(
               map<any, any>(res => {
