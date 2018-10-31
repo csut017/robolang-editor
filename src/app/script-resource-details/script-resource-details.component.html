@@ -1,4 +1,16 @@
 <form clrForm>
+  <div class="alert alert-warning" role="alert" *ngIf="!currentResourceType.type">
+    <div class="alert-items">
+      <div class="alert-item static">
+        <div class="alert-icon-wrapper">
+          <clr-icon class="alert-icon" shape="exclamation-triangle"></clr-icon>
+        </div>
+        <span class="alert-text">
+          Resource type cannot be changed: v1 resource.
+        </span>
+      </div>
+    </div>
+  </div>
   <clr-input-container>
     <label>Name</label>
     <input clrInput placeholder="name" name="input" [(ngModel)]="currentResource.name" required />
