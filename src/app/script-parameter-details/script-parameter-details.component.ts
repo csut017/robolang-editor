@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Input, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { Script } from '../data/script';
 import { ScriptParameter } from '../data/script-parameter';
 import { ScriptSettingsService } from '../services/script-settings.service';
@@ -10,13 +10,14 @@ import { ScriptViewService } from '../services/script-view.service';
   templateUrl: './script-parameter-details.component.html',
   styleUrls: ['./script-parameter-details.component.css']
 })
-export class ScriptParameterDetailsComponent implements OnInit {
+export class ScriptParameterDetailsComponent implements OnInit, OnChanges {
 
   dataTypes: ScriptValue[];
 
   constructor(private settingsService: ScriptSettingsService,
     private scriptView: ScriptViewService) { }
 
+  isGenerated: boolean;
   @Input() currentScript: Script;
   @Input() currentParameter: ScriptParameter;
   @Output() saving = new EventEmitter<Script>();
@@ -24,6 +25,15 @@ export class ScriptParameterDetailsComponent implements OnInit {
   ngOnInit() {
     this.settingsService.getSettings()
       .subscribe(settings => this.dataTypes = settings.dataTypes);
+  }
+
+  ngOnChanges(_: SimpleChanges) {
+    if (this.currentParameter) {
+      ScriptParameter.unpack(this.currentParameter);
+      this.isGenerated = this.currentParameter.isGenerated;
+    } else {
+      this.isGenerated = false;
+    }
   }
 
   save(): void {

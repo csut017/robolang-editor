@@ -1,10 +1,26 @@
 <form clrForm>
+  <div class="alert alert-info" role="alert" *ngIf="isGenerated">
+    <div class="alert-items">
+      <div class="alert-item static">
+        <div class="alert-icon-wrapper">
+          <clr-icon class="alert-icon" shape="info-circle"></clr-icon>
+        </div>
+        <span class="alert-text">
+          Parameter cannot be changed: Generated from Script
+        </span>
+      </div>
+    </div>
+  </div>
   <clr-input-container>
     <label>Name</label>
-    <input clrInput placeholder="name" name="input" [(ngModel)]="currentParameter.name" required />
+    <input clrInput placeholder="name" name="input" [(ngModel)]="currentParameter.name" required [readonly]="isGenerated" />
     <clr-control-error>This field is required!</clr-control-error>
   </clr-input-container>
-  <clr-select-container>
+  <clr-input-container *ngIf="isGenerated">
+    <label>Data Type</label>
+    <input clrInput placeholder="Data Type" name="dataType2" [(ngModel)]="currentParameter.dataTypeName" readonly />
+  </clr-input-container>
+  <clr-select-container *ngIf="!isGenerated">
     <label>Data Type</label>
     <select clrSelect name="dataType" [(ngModel)]="currentParameter.dataType">
       <option *ngFor="let dateType of dataTypes" value="{{dateType.id}}">{{dateType.value}}</option>
@@ -14,11 +30,11 @@
     <div class="form-group">
       <label>Options</label>
       <div class="checkbox">
-        <input type="checkbox" id="isRequired" name="isRequired" [(ngModel)]="currentParameter.isRequired">
+        <input type="checkbox" id="isRequired" name="isRequired" [(ngModel)]="currentParameter.isRequired" [disabled]="isGenerated">
         <label for="isRequired">Required</label>
       </div>
       <div class="checkbox">
-        <input type="checkbox" id="isSplit" name="isSplit" [(ngModel)]="currentParameter.isSplit">
+        <input type="checkbox" id="isSplit" name="isSplit" [(ngModel)]="currentParameter.isSplit" [disabled]="isGenerated">
         <label for="isSplit">Split</label>
       </div>
     </div>
