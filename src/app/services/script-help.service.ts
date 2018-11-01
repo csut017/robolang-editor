@@ -10,6 +10,7 @@ export class HelpInfo {
   hasArguments: boolean = false;
   hasChildren: boolean = false;
   hasParents: boolean = false;
+  isRoot: boolean = true;
 
   constructor(title: string, desc: string, requireChildren?: boolean) {
     this.title = title;
@@ -35,7 +36,12 @@ export class HelpInfo {
   addParent(name: string): HelpInfo {
     this.parents.push(name);
     this.hasParents = true;
+    this.isRoot = !!this.parents.find(p => p == '-');
     return this;
+  }
+
+  checkIsChildOf(name: string): boolean {
+    return !!this.parents.find(p => p == name);
   }
 }
 

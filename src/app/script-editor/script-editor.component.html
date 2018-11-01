@@ -19,7 +19,7 @@
           <clr-tab-content *clrIfActive="true">
             <div class="help-info">
               <clr-vertical-nav>
-                <clr-vertical-nav-group *ngFor="let info of help">
+                <clr-vertical-nav-group *ngFor="let info of visibleHelp">
                   {{info.title}}
                   <clr-vertical-nav-group-children>
                     <div class="help-info-child">
