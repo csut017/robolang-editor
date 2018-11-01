@@ -10,6 +10,7 @@ export class HelpInfo {
   hasArguments: boolean = false;
   hasChildren: boolean = false;
   hasParents: boolean = false;
+  isServer: boolean = false;
   isRoot: boolean = true;
 
   constructor(title: string, desc: string, requireChildren?: boolean) {
@@ -37,6 +38,11 @@ export class HelpInfo {
     this.parents.push(name);
     this.hasParents = true;
     this.isRoot = !!this.parents.find(p => p == '-');
+    return this;
+  }
+
+  setIsServer(): HelpInfo {
+    this.isServer = true;
     return this;
   }
 
@@ -123,7 +129,8 @@ export class ScriptHelpService {
         .addArgument('function', ArgumentType.String, true)
         .addArgument('argument', ArgumentType.String, true)
         .addArgument('value', ArgumentType.Any, true)
-        .addParent('-'),
+        .addParent('-')
+        .setIsServer(),
       new HelpInfo('doNothing', 'Does nothing'),
       new HelpInfo('equal', 'Checks if the condition matches the input.')
         .addArgument('condition', ArgumentType.Any, true)
@@ -161,7 +168,8 @@ export class ScriptHelpService {
         .addArgument('split', ArgumentType.Boolean)
         .addArgument('required', ArgumentType.Boolean)
         .addParent('-')
-        .addParent('function'),
+        .addParent('function')
+        .setIsServer(),
       new HelpInfo('play', 'Plays an external resource (audio or video).')
         .addArgument('movement', ArgumentType.String)
         .addArgument('sound', ArgumentType.String)

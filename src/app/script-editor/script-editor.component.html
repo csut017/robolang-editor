@@ -26,6 +26,10 @@
                       <div>
                         {{info.description}}
                       </div>
+                      <div *ngIf="info.isServer">
+                        <clr-icon shape="host" class="has-alert"></clr-icon>
+                        Server-side function
+                      </div>
                       <clr-stack-view *ngIf="info.hasArguments">
                         <clr-stack-header>
                           Arguments
@@ -73,8 +77,8 @@
             <div *ngIf="validation.issues && validation.issues.length">
               <clr-tree-node *ngFor="let item of validation.issues">
                 <button class="clr-treenode-link" (click)="moveToLine(item.lineNum)">
-                    <clr-icon shape="exclamation-circle"></clr-icon>
-                    {{item.message}}
+                  <clr-icon shape="exclamation-circle"></clr-icon>
+                  {{item.message}}
                 </button>
               </clr-tree-node>
             </div>
