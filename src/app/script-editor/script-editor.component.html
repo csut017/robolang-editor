@@ -97,13 +97,58 @@
           <clr-tab-content *clrIfActive>
             <div class="breakdown-info">
               <clr-tree-node>
+                <clr-icon shape="pop-out"></clr-icon>
+                Script Calls
+                <ng-template [clrIfExpanded]="true">
+                  <clr-tree-node *ngFor="let call of validation.scriptCalls">
+                    <clr-icon shape="pop-out" class="is-highlight"></clr-icon>
+                    {{call.name}}&nbsp;
+                    <clr-icon shape="flag" class="is-solid" *ngIf="call.missing"></clr-icon>
+                    <ng-template [clrIfExpanded]="false">
+                      <clr-tree-node *ngFor="let item of call.items">
+                        <button class="clr-treenode-link" (click)="moveToLine(item.lineNum)">
+                          Line {{item.lineNum + 1}}, position {{item.linePos + 1}}
+                        </button>
+                      </clr-tree-node>
+                    </ng-template>
+                  </clr-tree-node>
+                </ng-template>
+              </clr-tree-node>
+              <clr-tree-node>
+                <clr-icon shape="container-volume"></clr-icon>
+                Resources Used
+                <ng-template [clrIfExpanded]="true">
+                  <clr-tree-node *ngFor="let resource of validation.resourcesUsed">
+                    <clr-icon shape="container-volume" class="is-highlight"></clr-icon>
+                    {{resource.name}}&nbsp;
+                    <clr-dropdown [clrCloseMenuOnItemClick]="false" *ngIf="resource.missing">
+                      <button type="button" clrDropdownTrigger>
+                        <clr-icon shape="flag" class="is-solid is-error"></clr-icon>
+                        <clr-icon shape="caret down"></clr-icon>
+                      </button>
+                      <clr-dropdown-menu *clrIfOpen>
+                        <label class="dropdown-header">Resource missing</label>
+                        <button type="button" clrDropdownItem (click)="addMissingResource(resource)">Add resource</button>
+                      </clr-dropdown-menu>
+                    </clr-dropdown>
+                    <ng-template [clrIfExpanded]="false">
+                      <clr-tree-node *ngFor="let item of resource.items">
+                        <button class="clr-treenode-link" (click)="moveToLine(item.lineNum)">
+                          Line {{item.lineNum + 1}}, position {{item.linePos + 1}}
+                        </button>
+                      </clr-tree-node>
+                    </ng-template>
+                  </clr-tree-node>
+                </ng-template>
+              </clr-tree-node>
+              <clr-tree-node>
                 <clr-icon shape="arrow left"></clr-icon>
                 Function Calls
                 <ng-template [clrIfExpanded]="true">
                   <clr-tree-node *ngFor="let call of validation.functionCalls">
                     <clr-icon shape="arrow left" class="is-highlight"></clr-icon>
-                    {{call.name}}
-                    ({{call.items.length}})
+                    {{call.name}}&nbsp;
+                    <span class="badge">{{call.items.length}}</span>
                     <ng-template [clrIfExpanded]="false">
                       <clr-tree-node *ngFor="let item of call.items">
                         <button class="clr-treenode-link" (click)="moveToLine(item.lineNum)">
@@ -132,8 +177,8 @@
                 <ng-template [clrIfExpanded]="true">
                   <clr-tree-node *ngFor="let call of validation.references">
                     <clr-icon shape="filter-grid-circle" class="is-highlight"></clr-icon>
-                    {{call.name}}
-                    ({{call.items.length}})
+                    {{call.name}}&nbsp;
+                    <span class="badge">{{call.items.length}}</span>
                     <ng-template [clrIfExpanded]="false">
                       <clr-tree-node *ngFor="let item of call.items">
                         <button class="clr-treenode-link" (click)="moveToLine(item.lineNum)">

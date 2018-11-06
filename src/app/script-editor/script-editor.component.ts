@@ -1,6 +1,6 @@
 import { Component, EventEmitter, OnInit, Input, Output, OnChanges, SimpleChanges, ViewChild, HostListener, NgZone } from '@angular/core';
 import { Script } from '../data/script';
-import { ValidationService, ValidationResult, ASTNode } from '../services/validation.service';
+import { ValidationService, ValidationResult, ASTNode, Information, ASTToken } from '../services/validation.service';
 
 // Import the theme and mode
 import "brace";
@@ -10,6 +10,10 @@ import { AceEditorComponent } from 'ng2-ace-editor';
 import { HelpInfo, ScriptHelpService } from '../services/script-help.service';
 import { debounceTime, tap } from 'rxjs/operators';
 import { ScriptService } from '../services/script.service';
+import { ScriptResource } from '../data/script-resource';
+import { ScriptSettingsService } from '../services/script-settings.service';
+import { ScriptViewService } from '../services/script-view.service';
+import { ScriptValue } from '../data/script-value';
 
 class statusInfo {
   type: string;
@@ -100,8 +104,11 @@ export class ScriptEditorComponent implements OnInit, OnChanges {
   constructor(private validationService: ValidationService,
     private scriptHelp: ScriptHelpService,
     private scriptService: ScriptService,
-    private zone: NgZone) { }
+    private zone: NgZone,
+    private scriptView: ScriptViewService,
+    private settingsService: ScriptSettingsService) { }
 
+  private defaultResourceType: ScriptValue;
   help: HelpInfo[];
   visibleHelp: HelpInfo[];
   status: statusInfo;
@@ -141,7 +148,10 @@ export class ScriptEditorComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    this.help = this.scriptHelp.getAll();
+    this.settingsService.getSettings()
+      .subscribe(settings => this.defaultResourceType = settings.resourceTypes[0]);
+
+      this.help = this.scriptHelp.getAll();
     this.onResize({
       target: window
     });
@@ -236,6 +246,11 @@ export class ScriptEditorComponent implements OnInit, OnChanges {
         } else {
           this.status.success('Script is valid');
           this.lineNumber = undefined;
+
+          const resources = this.currentScript.resources || [];
+          (result.resourcesUsed || []).forEach(res => {
+            res.missing = !resources.find(r => r.name == res.name);
+          });
         }
       });
   }
@@ -253,5 +268,15 @@ export class ScriptEditorComponent implements OnInit, OnChanges {
       console.log(`Moving to line ${lineNum}`);
       this.editor.getEditor().gotoLine(lineNum);
     }
+  }
+
+  addMissingResource(resource: Information<ASTToken>): void {
+    var res = new ScriptResource();
+    res.name = resource.name;
+    res.resourceType = this.defaultResourceType.id;
+    res.resourceTypeName = this.defaultResourceType.value;
+    if (!this.currentScript.resources) this.currentScript.resources = [];
+    this.currentScript.resources.push(res);
+    this.scriptView.changeView('resource', res);
   }
 }

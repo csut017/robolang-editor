@@ -15,6 +15,8 @@ export class ValidationResult {
   functionCalls: Information<ASTToken>[];
   functionDefinitions: ASTToken[];
   references: Information<ASTToken>[];
+  scriptCalls: Information<ASTToken>[];
+  resourcesUsed: Information<ASTToken>[];
 
   // Validation
   issues: ParseError[];
@@ -25,6 +27,15 @@ export class ASTNode {
   type: string;
   args: ASTNode[];
   children: ASTNode[];
+
+  static findArg(node: ASTNode, name: string): ASTToken {
+    var argNode = (node.args || []).find(arg => arg.token.value == name);
+    if (argNode && argNode.children && argNode.children.length) {
+      return argNode.children[0].token;
+    }
+  
+    return;
+  }  
 }
 
 export class ASTToken {
@@ -51,6 +62,7 @@ export class ParseError {
 export class Information<T> {
   name: string;
   items: T[];
+  missing: boolean;
 
   constructor(name: string) {
     this.name = name;
@@ -67,6 +79,32 @@ const ChildNumber = {
 }
 type ChildNumber = (typeof ChildNumber)[keyof typeof ChildNumber];
 
+type FunctionChecker = (node: ASTNode, info: WalkInformation) => void;
+
+class WalkInformation {
+  functions: TokenInformation[];
+  references: TokenInformation[];
+  scriptCalls: TokenInformation[];
+  resources: TokenInformation[];
+
+  constructor() {
+    this.functions = [];
+    this.references = [];
+    this.scriptCalls = [];
+    this.resources = [];
+  }
+}
+
+class TokenInformation {
+  name: string;
+  token: ASTToken;
+
+  constructor(name: string, token: ASTToken) {
+    this.name = name;
+    this.token = token;
+  }
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -80,6 +118,12 @@ export class ValidationService {
   }
 
   private helpMap: { [index: string]: HelpInfo } = {};
+  private functionCheckers: { [index: string]: FunctionChecker } = {
+    'call': this.checkCall,
+    'play': this.checkPlay,
+    'say': this.checkSay,
+    'showScreen': this.checkShowScreen,
+  };
 
   validate(script: Script): Observable<ValidationResult> {
     return this.compile(script)
@@ -110,13 +154,14 @@ export class ValidationService {
     result.functionCalls = [];
     result.functionDefinitions = [];
     result.references = [];
-    var functions = [];
-    var references = [];
-    (result.ast || []).forEach(node => this.informationWalk(node, result, functions, references));
+    var info = new WalkInformation();
+    (result.ast || []).forEach(node => this.informationWalk(node, result, info));
 
-    result.functionCalls = this.consolidateInformation(functions);
+    result.functionCalls = this.consolidateInformation(info.functions);
     result.functionDefinitions.sort((a, b) => a.value == b.value ? 0 : (a.value > b.value ? 1 : -1))
-    result.references = this.consolidateInformation(references);
+    result.references = this.consolidateInformation(info.references);
+    result.scriptCalls = this.consolidateInformation(info.scriptCalls);
+    result.resourcesUsed = this.consolidateInformation(info.resources);
 
     return result;
   }
@@ -172,8 +217,8 @@ export class ValidationService {
 
     if (item.hasParents) {
       var isValid = !!parent,
-          checkRoot = !!item.parents.find(p => p == '-');
-      
+        checkRoot = !!item.parents.find(p => p == '-');
+
       if (checkRoot) {
         isValid = !parent || item.parents.length > 1;
       }
@@ -248,16 +293,17 @@ export class ValidationService {
     return arg.name;
   }
 
-  private consolidateInformation(tokens: ASTToken[]): Information<ASTToken>[] {
+  private consolidateInformation(tokens: TokenInformation[]): Information<ASTToken>[] {
     var output = [];
     var outputMap: { [index: string]: Information<ASTToken> } = {};
     tokens.forEach(func => {
-      var current = outputMap[func.value];
+      const name = func.name;
+      var current = outputMap[name];
       if (!current) {
-        current = new Information<ASTToken>(func.value);
-        outputMap[func.value] = current;
+        current = new Information<ASTToken>(name);
+        outputMap[name] = current;
       }
-      current.items.push(func);
+      current.items.push(func.token);
     });
 
     for (var prop in outputMap) {
@@ -274,7 +320,7 @@ export class ValidationService {
 
   private addNamedToken(node: ASTNode, output: ASTToken[]) {
     var tok = new ASTToken();
-    const nameToken = this.findArg(node, 'name');
+    const nameToken = ASTNode.findArg(node, 'name');
     if (nameToken) {
       tok.value = nameToken.value;
       tok.lineNum = node.token.lineNum;
@@ -283,27 +329,51 @@ export class ValidationService {
     }
   }
 
-  private informationWalk(node: ASTNode, result: ValidationResult, functions: ASTToken[], references: ASTToken[]): void {
+  private informationWalk(node: ASTNode, result: ValidationResult, info: WalkInformation): void {
     if (node.type == 'Function') {
-      functions.push(node.token);
+      info.functions.push(new TokenInformation(node.token.value, node.token));
       if (node.token.value == 'function') {
         this.addNamedToken(node, result.functionDefinitions);
       }
+
+      const checker = this.functionCheckers[node.token.value];
+      if (checker) {
+        checker(node, info);
+      }
     } else if (node.type == 'Reference') {
-      references.push(node.token);
+      info.references.push(new TokenInformation(node.token.value, node.token));
     }
 
-    (node.children || []).forEach(child => this.informationWalk(child, result, functions, references));
-    (node.args || []).forEach(arg => (arg.children || []).forEach(child => this.informationWalk(child, result, functions, references)))
+    (node.children || []).forEach(child => this.informationWalk(child, result, info));
+    (node.args || []).forEach(arg => (arg.children || []).forEach(child => this.informationWalk(child, result, info)))
   }
 
-  private findArg(node: ASTNode, name: string): ASTToken {
-    var argNode = (node.args || []).find(arg => arg.token.value == name);
-    if (argNode && argNode.children && argNode.children.length) {
-      return argNode.children[0].token;
+  private checkCall(node: ASTNode, info: WalkInformation) {
+    const script = ASTNode.findArg(node, 'script');
+    if (script) {
+      info.scriptCalls.push(new TokenInformation(script.value, node.token));
     }
+  }
 
-    return;
+  private checkPlay(node: ASTNode, info: WalkInformation) {
+    const script = ASTNode.findArg(node, 'sound');
+    if (script) {
+      info.resources.push(new TokenInformation(script.value, node.token));
+    }
+  }
+
+  private checkSay(node: ASTNode, info: WalkInformation) {
+    const script = ASTNode.findArg(node, 'speech');
+    if (script) {
+      info.resources.push(new TokenInformation(script.value, node.token));
+    }
+  }
+
+  private checkShowScreen(node: ASTNode, info: WalkInformation) {
+    const script = ASTNode.findArg(node, 'screen');
+    if (script) {
+      info.resources.push(new TokenInformation(script.value, node.token));
+    }
   }
 
   private log(message: string) {
