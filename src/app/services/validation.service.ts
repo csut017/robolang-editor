@@ -6,6 +6,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Script } from '../data/script';
 import { ScriptHelpService, HelpInfo, FunctionArgument, FunctionChild } from './script-help.service';
+import { ScriptService } from './script.service';
 
 export class ValidationResult {
   ast: ASTNode[];
@@ -112,6 +113,7 @@ export class ValidationService {
 
   constructor(private http: HttpClient,
     private messageService: MessageService,
+    private scriptService: ScriptService,
     private scriptHelp: ScriptHelpService) {
     const help = this.scriptHelp.getAll();
     help.forEach(item => this.helpMap[item.title] = item);
@@ -169,6 +171,23 @@ export class ValidationService {
   checkAST(result: ValidationResult): ValidationResult {
     result.issues = [];
     result.ast.forEach(node => this.checkASTNode(result, node));
+    return result;
+  }
+
+  checkForMissingScripts(result: ValidationResult, scripts: Script[]): ValidationResult {
+    if (!result.scriptCalls || !result.scriptCalls.length) {
+      return result;
+    }
+
+    if (result.scriptCalls.length == 1) {
+      var call = result.scriptCalls[0];
+      call.missing = !scripts.find(s => s.name == call.name);
+      return result;
+    }
+
+    var listMap: {[index:string]: boolean} = {};
+    scripts.forEach(script => listMap[script.name] = true);
+    result.scriptCalls.forEach(call => call.missing = !listMap[call.name]);
     return result;
   }
 

@@ -26,8 +26,6 @@ ace.define("ace/mode/python_highlight_rules", ["require", "exports", "module", "
       "keyword": keywords
     }, "identifier");
 
-    var strPre = "(?:r|u|ur|R|U|UR|Ur|uR)?";
-
     var decimalInteger = "(?:(?:[1-9]\\d*)|(?:0))";
     var octInteger = "(?:0[oO]?[0-7]+)";
     var hexInteger = "(?:0[xX][\\dA-Fa-f]+)";
@@ -49,7 +47,11 @@ ace.define("ace/mode/python_highlight_rules", ["require", "exports", "module", "
         regex: "#.*$"
       }, {
         token: "string", // ' string
-        regex: strPre + "'(?=.)",
+        regex: "'(?=.)",
+        next: "qstring"
+      }, {
+        token: "string", // "" string
+        regex: "\"(?=.)",
         next: "qstring"
       }, {
         token: "constant.numeric", // imaginary

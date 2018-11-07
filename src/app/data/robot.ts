@@ -22,4 +22,5 @@ export class Robot {
     isLoaded: boolean;
     isAdding: boolean;
     original: Robot;
+    scriptsAreValid: boolean = true;
 }

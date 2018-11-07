@@ -43,7 +43,9 @@ export class RobotsService {
         tap(_ => this.log(`Fetched script resources for robot with id of ${robot.id}`)),
         catchError(this.handleError<Robot>(`getResourcesForRobot id=${robot.id}`)),
         map(data => {
-          robot.resources = data.items;
+          if (data) {
+            robot.resources = data.items;
+          }
           return robot;
         })
       );
@@ -57,7 +59,7 @@ export class RobotsService {
         tap(_ => this.log(`Fetched scripts for robot with id of ${robot.id}`)),
         catchError(this.handleError<Robot>(`getScriptsForRobot id=${robot.id}`))
       );
-      var checksum = this.http.get<any>(`${url}/checksum`)
+    var checksum = this.http.get<any>(`${url}/checksum`)
       .pipe(
         tap(_ => this.log(`Fetched checksum for robot with id of ${robot.id}`)),
         catchError(this.handleError<Robot>(`getScriptsForRobot id=${robot.id}`))
@@ -65,8 +67,13 @@ export class RobotsService {
     return forkJoin([scripts, checksum])
       .pipe(
         map(data => {
-          robot.scripts = data[0].items;
-          robot.checksum = data[1].hash;
+          if (data[0]) {
+            robot.scripts = data[0].items;
+            robot.checksum = data[1].hash;
+            robot.scriptsAreValid = true;
+          } else {
+            robot.scriptsAreValid = false;
+          }
           return robot;
         })
       );

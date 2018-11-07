@@ -45,6 +45,7 @@ export class ScriptsComponent implements OnInit {
   isLoading: boolean = false;
   view: ScriptView;
   actionMessage: string;
+  sidebarVisible: boolean = true;
 
   constructor(private scriptService: ScriptService,
     private settingsService: ScriptSettingsService,

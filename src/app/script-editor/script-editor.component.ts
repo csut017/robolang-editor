@@ -117,6 +117,7 @@ export class ScriptEditorComponent implements OnInit, OnChanges {
   ast: ASTNode[];
   astRanges: range[];
   @Input() currentScript: Script;
+  @Input() scripts: Script[];
   @Output() saving = new EventEmitter<Script>();
   @ViewChild(AceEditorComponent) editor: AceEditorComponent;
 
@@ -251,6 +252,8 @@ export class ScriptEditorComponent implements OnInit, OnChanges {
           (result.resourcesUsed || []).forEach(res => {
             res.missing = !resources.find(r => r.name == res.name);
           });
+
+          this.validationService.checkForMissingScripts(result, this.scripts);
         }
       });
   }

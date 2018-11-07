@@ -105,7 +105,7 @@
               <app-script-details [currentScript]="currentScript" (saving)="save($event)" (deleting)="delete($event)"></app-script-details>
             </div>
             <div *ngIf="!isLoading && view.currentView=='script'">
-              <app-script-editor [currentScript]="currentScript" (saving)="save($event)"></app-script-editor>
+              <app-script-editor [currentScript]="currentScript" [scripts]="scripts" (saving)="save($event)"></app-script-editor>
             </div>
             <!-- <div *ngIf="!isLoading && view.currentView=='blockly'">
               <app-blockly-editor [currentScript]="currentScript" (saving)="save($event)"></app-blockly-editor>
@@ -138,7 +138,19 @@
         </div>
       </div>
     </div>
-    <nav class="sidenav">
+    <nav class="sidenav sidenav-thin" *ngIf="!sidebarVisible">
+      <div class="sidenav-button">
+        <button class="btn btn-link" (click)="sidebarVisible=true">
+          <clr-icon shape="pop-out"></clr-icon>
+        </button>
+      </div>
+    </nav>
+    <nav class="sidenav" *ngIf="!!sidebarVisible">
+      <div class="sidenav-button">
+        <button class="btn btn-link" (click)="sidebarVisible=false">
+          <clr-icon shape="window-close"></clr-icon>
+        </button>
+      </div>
       <section class="sidenav-content">
         <section class="nav-group collapsible" *ngFor="let group of groups">
           <input id="scripts" type="checkbox">

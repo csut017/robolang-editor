@@ -103,7 +103,16 @@
                   <clr-tree-node *ngFor="let call of validation.scriptCalls">
                     <clr-icon shape="pop-out" class="is-highlight"></clr-icon>
                     {{call.name}}&nbsp;
-                    <clr-icon shape="flag" class="is-solid" *ngIf="call.missing"></clr-icon>
+                    <clr-dropdown [clrCloseMenuOnItemClick]="false" *ngIf="call.missing">
+                      <button type="button" clrDropdownTrigger>
+                        <clr-icon shape="flag" class="is-solid is-error"></clr-icon>
+                        <clr-icon shape="caret down"></clr-icon>
+                      </button>
+                      <clr-dropdown-menu *clrIfOpen>
+                        <label class="dropdown-header">Script missing</label>
+                        <button type="button" clrDropdownItem (click)="addMissingScript(call)">Add script</button>
+                      </clr-dropdown-menu>
+                    </clr-dropdown>
                     <ng-template [clrIfExpanded]="false">
                       <clr-tree-node *ngFor="let item of call.items">
                         <button class="clr-treenode-link" (click)="moveToLine(item.lineNum)">
