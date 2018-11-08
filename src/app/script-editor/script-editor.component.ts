@@ -206,7 +206,9 @@ export class ScriptEditorComponent implements OnInit, OnChanges {
     var out = new range(node);
     switch (node.token.type) {
       case 'TEXT':
-        out.endCol += 2;  // Need to include quotation marks;
+      case 'TEMPLATE':
+      case 'LIST':
+        out.endCol += 2;  // Need to include the delimiters
         break;
 
       case 'REFERENCE':
