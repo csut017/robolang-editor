@@ -6,7 +6,13 @@
         Please select a robot to view.
       </div>
       <div *ngIf="currentRobot">
-        <app-robot-details [currentRobot]="currentRobot"></app-robot-details>
+        <h1>
+          <span class="spinner spinner-sm" *ngIf="isLoading">
+            ...
+          </span>
+          {{currentRobot.display}}
+        </h1>
+        <app-robot-details [currentRobot]="currentRobot" [currentItem]="currentItem" (currentItemChanged)="currentItemChanged($event)"></app-robot-details>
       </div>
     </div>
     <nav class="sidenav">
@@ -20,7 +26,7 @@
           <ul class="nav-list">
             <li *ngFor="let robot of robots">
               <a href="javascript://" [class.active]="currentRobot && (currentRobot.id==robot.id)" class="nav-link"
-                (click)="changeRobot(robot)">
+                (click)="changeRobot(robot, true)">
                 {{robot.name}}
               </a>
             </li>

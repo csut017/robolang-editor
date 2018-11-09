@@ -1,8 +1,5 @@
-<h1>
-  {{currentRobot.display}}
-</h1>
-<div class="clr-row">
-  <div class="clr-col" *ngIf="!currentScript">
+<div class="clr-row" *ngIf="!simulatorVisible">
+  <div class="clr-col" *ngIf="!currentItem">
     <div class="card">
       <div class="card-block">
         <form clrForm>
@@ -64,12 +61,14 @@
       <div class="card-block">
         <h4>Scripts</h4>
         <clr-tree-node *ngFor="let script of currentRobot.scripts">
-          <button class="clr-treenode-link" (click)="currentScript = script" [class.active]="currentScript == script">
+          <button class="clr-treenode-link" (click)="changeItem(script)" [class.active]="currentItem == script">
+            <clr-icon shape="play" class="is-highlight" *ngIf="script.source=='Configured'"></clr-icon>
+            <clr-icon shape="login" class="is-highlight" *ngIf="script.source!='Configured'"></clr-icon>
             {{script.name}}
           </button>
           <ng-template [(clrIfExpanded)]="script.expanded">
             <clr-tree-node *ngFor="let resource of script.resources">
-              <button class="clr-treenode-link" (click)="currentScript = resource" [class.active]="currentScript == resource">
+              <button class="clr-treenode-link" (click)="changeItem(resource)" [class.active]="currentItem == resource">
                 {{resource.name}} [{{resource.type}}]
               </button>
             </clr-tree-node>
@@ -77,25 +76,43 @@
         </clr-tree-node>
       </div>
       <div class="card-block">
+        <button class="btn btn-success-outline pull-right" *ngIf="currentItem && currentItem.source=='Configured'" (click)="simulatorVisible=true">
+          Open in Simulator
+        </button>
         <a class="btn btn-outline" [href]="scriptsDownloadLocation">
           Download All
         </a>
       </div>
     </div>
   </div>
-  <div class="clr-col" *ngIf="currentScript">
+  <div class="clr-col" *ngIf="currentItem">
     <div class="card">
       <div class="card-header">
-        {{currentScript.name}}
+        {{currentItem.name}}
       </div>
       <div class="card-block">
-        <app-robot-script [currentScript]="currentScript"></app-robot-script>
+        <app-robot-script [currentScript]="currentItem"></app-robot-script>
       </div>
       <div class="card-block">
-        <button class="btn btn-primary" (click)="currentScript = undefined">
+        <button class="btn btn-primary" (click)="changeItem()">
           Back
         </button>
       </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="simulatorVisible">
+  <div class="card">
+    <div class="card-header">
+      Script Simulator
+    </div>
+    <div class="card-block">
+      <app-robot-simulator [currentRobot]="currentRobot" [startScript]="currentItem"></app-robot-simulator>
+    </div>
+    <div class="card-block">
+      <button class="btn btn-primary" (click)="simulatorVisible=false">
+        Back
+      </button>
     </div>
   </div>
 </div>
