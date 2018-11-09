@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Robot } from '../data/robot';
 import { RobotsService } from '../services/robots.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { RobotScript } from '../data/robot-script';
 
 @Component({
   selector: 'app-robots',
@@ -49,11 +50,26 @@ export class RobotsComponent implements OnInit {
             this.robotService.getScriptsForRobot(this.currentRobot)
               .subscribe(r => {
                 this.currentRobot.checksum = r.checksum;
+                r.scripts.sort((a, b) => {
+                  const aName = (a.name || '').toLowerCase();
+                  const bName = (b.name || '').toLowerCase();
+                  const out = aName == bName ? 0 : aName > bName ? 1 : -1;
+                  return out;
+                });
                 this.currentRobot.scripts = r.scripts;
-              });
-            this.robotService.getResourcesForRobot(this.currentRobot)
-              .subscribe(r => {
-                this.currentRobot.resources = r.resources;
+                this.robotService.getResourcesForRobot(this.currentRobot)
+                  .subscribe(resp => {
+                    this.currentRobot.resources = resp.resources;
+                    let scripts: { [index: string]: RobotScript } = {};
+                    r.scripts.forEach(s => scripts[s.name] = s);
+                    resp.resources.forEach(res => {
+                      let parent = scripts[res.parent];
+                      if (parent) {
+                        if (!parent.resources) parent.resources = [];
+                        parent.resources.push(res);
+                      }
+                    });
+                  });
               });
           }
         });

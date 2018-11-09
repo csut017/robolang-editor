@@ -1,8 +1,8 @@
 <h1>
   {{currentRobot.display}}
 </h1>
-<div class="clr-row" *ngIf="!currentScript">
-  <div class="clr-col">
+<div class="clr-row">
+  <div class="clr-col" *ngIf="!currentScript">
     <div class="card">
       <div class="card-block">
         <form clrForm>
@@ -62,33 +62,19 @@
     </div>
     <div class="card" *ngIf="currentRobot.scripts">
       <div class="card-block">
-        <clr-tabs>
-          <clr-tab>
-            <button clrTabLink id="link1">Scripts</button>
-            <clr-tab-content *clrIfActive>
-              <ul class="list-unstyled">
-                <li *ngFor="let script of currentRobot.scripts">
-                  <a href="javascript://" (click)="currentScript = script">
-                    {{script.name}}
-                  </a>
-                </li>
-              </ul>
-            </clr-tab-content>
-          </clr-tab>
-          <clr-tab>
-            <button clrTabLink>Resources</button>
-            <clr-tab-content *clrIfActive>
-              <ul class="list-unstyled">
-                <li *ngFor="let resource of currentRobot.resources">
-                  <a href="javascript://" (click)="currentScript = resource">
-                    <span *ngIf="resource.parent">{{resource.parent}}:</span>
-                    {{resource.name}} [{{resource.type}}]
-                  </a>
-                </li>
-              </ul>
-            </clr-tab-content>
-          </clr-tab>
-        </clr-tabs>
+        <h4>Scripts</h4>
+        <clr-tree-node *ngFor="let script of currentRobot.scripts">
+          <button class="clr-treenode-link" (click)="currentScript = script" [class.active]="currentScript == script">
+            {{script.name}}
+          </button>
+          <ng-template [(clrIfExpanded)]="script.expanded">
+            <clr-tree-node *ngFor="let resource of script.resources">
+              <button class="clr-treenode-link" (click)="currentScript = resource" [class.active]="currentScript == resource">
+                {{resource.name}} [{{resource.type}}]
+              </button>
+            </clr-tree-node>
+          </ng-template>
+        </clr-tree-node>
       </div>
       <div class="card-block">
         <a class="btn btn-outline" [href]="scriptsDownloadLocation">
@@ -97,17 +83,19 @@
       </div>
     </div>
   </div>
-</div>
-<div class="card" *ngIf="currentScript">
-  <div class="card-header">
-    {{currentScript.name}}
-  </div>
-  <div class="card-block">
-    <app-robot-script [currentScript]="currentScript"></app-robot-script>
-  </div>
-  <div class="card-block">
-    <button class="btn btn-primary" (click)="currentScript = undefined">
-      Back to Robot
-    </button>
+  <div class="clr-col" *ngIf="currentScript">
+    <div class="card">
+      <div class="card-header">
+        {{currentScript.name}}
+      </div>
+      <div class="card-block">
+        <app-robot-script [currentScript]="currentScript"></app-robot-script>
+      </div>
+      <div class="card-block">
+        <button class="btn btn-primary" (click)="currentScript = undefined">
+          Back
+        </button>
+      </div>
+    </div>
   </div>
 </div>
