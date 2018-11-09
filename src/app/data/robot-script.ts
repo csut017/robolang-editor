@@ -7,4 +7,5 @@ export class RobotScript {
     source: string;
     resources: RobotResource[];
     expanded: boolean;
+    compiled: boolean;
 }

@@ -1,8 +1,79 @@
 <div class="clr-row">
   <div class="clr-col">
-    Information goes here
+    <clr-tabs>
+      <clr-tab>
+        <button clrTabLink>Log</button>
+        <clr-tab-content *clrIfActive>
+          <clr-datagrid>
+            <clr-dg-column [clrDgField]="'id'">ID</clr-dg-column>
+            <clr-dg-column [clrDgField]="'category'">Category</clr-dg-column>
+            <clr-dg-column [clrDgField]="'message'">Message</clr-dg-column>
+
+            <clr-dg-row *clrDgItems="let msg of simulator.messages">
+              <clr-dg-cell>{{msg.id}}</clr-dg-cell>
+              <clr-dg-cell>{{msg.category}}</clr-dg-cell>
+              <clr-dg-cell>{{msg.message}}</clr-dg-cell>
+            </clr-dg-row>
+
+            <clr-dg-footer>
+              <clr-dg-pagination #pagination [clrDgPageSize]="20">
+                {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}}
+                of {{pagination.totalItems}} messages
+              </clr-dg-pagination>
+            </clr-dg-footer>
+          </clr-datagrid>
+        </clr-tab-content>
+      </clr-tab>
+      <clr-tab>
+        <button clrTabLink>Data</button>
+        <clr-tab-content *clrIfActive>
+          ...
+        </clr-tab-content>
+      </clr-tab>
+      <clr-tab>
+        <button clrTabLink>Wait State</button>
+        <clr-tab-content *clrIfActive>
+          ...
+        </clr-tab-content>
+      </clr-tab>
+      <clr-tab>
+        <button clrTabLink>Loaded Scripts</button>
+        <clr-tab-content *clrIfActive>
+          <table class="table table-compact">
+            <thead>
+              <tr>
+                <th class="left">Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let script of simulator.scripts">
+                <td class="left">{{script.source.name}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </clr-tab-content>
+      </clr-tab>
+    </clr-tabs>
   </div>
   <div class="clr-col">
-    Screen goes here
+    <clr-tabs>
+      <clr-tab>
+        <button clrTabLink>Current Script</button>
+        <clr-tab-content *clrIfActive>
+          <div>
+            <button class="btn btn-primary" (click)="simulator.executeNext()">
+              <clr-icon shape="step-forward-2"></clr-icon>
+              Next
+            </button>
+          </div>
+        </clr-tab-content>
+      </clr-tab>
+      <clr-tab>
+        <button clrTabLink>Screen</button>
+        <clr-tab-content *clrIfActive>
+          ...
+        </clr-tab-content>
+      </clr-tab>
+    </clr-tabs>
   </div>
 </div>

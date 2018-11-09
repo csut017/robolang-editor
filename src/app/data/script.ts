@@ -1,6 +1,7 @@
 import { ScriptParameter } from './script-parameter'
 import { ScriptResource } from './script-resource'
 import { ScriptVersion } from './script-version';
+import { RobotScript } from './robot-script';
 
 export class Script {
     id: number;
@@ -37,5 +38,12 @@ export class Script {
     static unpack(script: Script): void {
         script.isObsolete = !!(script.flags & 1);
         script.isInactive = !!(script.flags & 2);
+    }
+
+    static from(robotScript: RobotScript): Script {
+        let out = new Script();
+        out.name = robotScript.name;
+        out.script = robotScript.script;
+        return out;
     }
 }

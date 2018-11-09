@@ -6,9 +6,9 @@ import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Script } from '../data/script';
 import { ScriptHelpService, HelpInfo, FunctionArgument, FunctionChild } from './script-help.service';
-import { ScriptService } from './script.service';
 
 export class ValidationResult {
+  source: Script;
   ast: ASTNode[];
   error: ParseError;
 
@@ -113,7 +113,6 @@ export class ValidationService {
 
   constructor(private http: HttpClient,
     private messageService: MessageService,
-    private scriptService: ScriptService,
     private scriptHelp: ScriptHelpService) {
     const help = this.scriptHelp.getAll();
     help.forEach(item => this.helpMap[item.title] = item);
@@ -145,6 +144,7 @@ export class ValidationService {
         catchError(this.handleError<Script>(`validate id=${script.id}`)),
         map<any, ValidationResult>(res => {
           var val = new ValidationResult();
+          val.source = script;
           val.ast = res.ast;
           if (res.error) val.error = res.error;
           return val;

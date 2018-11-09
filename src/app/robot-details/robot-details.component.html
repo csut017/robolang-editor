@@ -107,7 +107,7 @@
       Script Simulator
     </div>
     <div class="card-block">
-      <app-robot-simulator [currentRobot]="currentRobot" [startScript]="currentItem"></app-robot-simulator>
+      <app-robot-simulator [currentRobot]="currentRobot" [startScript]="currentItem" [allScripts]="currentRobot.scripts"></app-robot-simulator>
     </div>
     <div class="card-block">
       <button class="btn btn-primary" (click)="simulatorVisible=false">
