@@ -16,7 +16,7 @@ export class ResourcesService {
     private messageService: MessageService) { }
 
   getResources(size: number = 20, page: number = 0, search?: string): Observable<Resource[]> {
-    var url = `${environment.baseURL}resources?p=${page}&l=${size}`;
+    var url = `${environment.apiURL}resources?p=${page}&l=${size}`;
     if (search) url += `&s=url:(${search})`;
     this.log('Fetching resources');
     return this.http.get<any>(url)
@@ -28,7 +28,7 @@ export class ResourcesService {
   }
 
   listTypes(): Observable<ScriptValue[]> {
-    var url = `${environment.baseURL}resources/types`;
+    var url = `${environment.apiURL}resources/types`;
     this.log('Fetching resource types');
     return this.http.get<any>(url)
       .pipe(
@@ -39,7 +39,7 @@ export class ResourcesService {
   }
 
   addResource(name: string, typeID: number): Observable<Resource> {
-    var url = `${environment.baseURL}resources`;
+    var url = `${environment.apiURL}resources`;
     const data = {
       resourceType: typeID,
       url: name

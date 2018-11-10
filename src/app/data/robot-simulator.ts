@@ -1,8 +1,7 @@
 import { ValidationResult, ASTNode } from '../services/validation.service';
 import { ExecutionEnvironment } from './simulator/environment';
 import { MessageLog, LogCategory } from './simulator/message-log';
-import { VariableTable } from './simulator/variable-table';
-import { variable } from '@angular/compiler/src/output/output_ast';
+import { RobotResource } from './robot-resource';
 
 export class RobotSimulator extends MessageLog {
     scripts: InternalScript[];
@@ -27,8 +26,8 @@ export class RobotSimulator extends MessageLog {
         this.startScript(startingScript);
     }
 
-    addScript(script: ValidationResult) {
-        this.scripts.push(new InternalScript(script));
+    addScript(script: ValidationResult, resources: RobotResource[]) {
+        this.scripts.push(new InternalScript(script, resources || []));
     }
 
     executeNext(): void {
@@ -94,15 +93,17 @@ export class InternalScript extends ValidationResult {
     frames: ScriptFrame[] = [];
     currentFrame: number;
     environment: ExecutionEnvironment;
+    resources: RobotResource[];
 
-    constructor(result: ValidationResult) {
+    constructor(result: ValidationResult, resources: RobotResource[]) {
         super();
         this.ast = result.ast;
         this.source = result.source;
+        this.resources = resources;
     }
 
     start(log: MessageLog, parent?: InternalScript): InternalScript {
-        let started = new InternalScript(this);
+        let started = new InternalScript(this, this.resources);
         started.currentFrame = started.frames.push(new ScriptFrame(started.ast, true));
         var env: ExecutionEnvironment;
         if (parent) env = parent.environment;

@@ -4,8 +4,9 @@
 
 export const environment = {
   production: false,
-  baseURL: 'http://localhost:8082/api/',
-  resourceURL: 'http://localhost:8082/resources/'
+  baseURL: 'http://localhost:8082/',
+  resourceURL: 'http://localhost:8082/resources/',
+  apiURL: 'http://localhost:8082/api/'
 };
 
 /*

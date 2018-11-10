@@ -1,6 +1,7 @@
 import { ExecutionEnvironment, ResolvedArguments } from "./environment";
 import { ASTNode } from "src/app/services/validation.service";
 import { LogCategory } from "./message-log";
+import { environment } from "src/environments/environment";
 
 export interface FunctionExecution {
     execute(ResolvedArguments, ASTNode);
@@ -31,9 +32,16 @@ export class DefineOrSetVariable implements FunctionExecution {
         if (!value) {
             this.env.log.addMessage(`Retrieving ${varType} variable '${name}'`, LogCategory.Simulator);
             let variable = this.env.variables.get(name);
-            this.env.variables.setLocal(name, (variable ? variable : null) || defaultValue, isServer);
+            let newVar = variable;
+            if (variable) {
+                newVar = variable.value;
+            } else {
+                newVar = defaultValue;
+            }
+            this.env.log.addMessage(`Using '${newVar}' for variable '${name}'`, LogCategory.Simulator);
+            this.env.variables.setLocal(name, newVar, isServer);
         } else {
-            this.env.log.addMessage(`Setting ${varType} variable '${name}'`, LogCategory.Simulator);
+            this.env.log.addMessage(`Setting ${varType} variable to '${name}'`, LogCategory.Simulator);
             this.env.variables.set(name, value, isServer);
         }
     }
@@ -46,6 +54,15 @@ export class PlaySound implements FunctionExecution {
     execute(args: ResolvedArguments, node: ASTNode) {
         let name = args['sound'];
         this.env.log.addMessage(`Playing sound '${name}`, LogCategory.Simulator);
+        let res = this.env.findResource(name);
+        if (res) {
+            const url = `${environment.baseURL}${res.url}`;
+            this.env.log.addMessage(`Loading audio from '${url}`, LogCategory.Simulator);
+            let sound = new Audio(url);
+            sound.play();
+        } else {
+            throw `Unable to find resource '${name}'`;
+        }
     }
 }
 
@@ -56,6 +73,10 @@ export class SaySpeech implements FunctionExecution {
     execute(args: ResolvedArguments, node: ASTNode) {
         let text = args['speech'];
         this.env.log.addMessage(`Saying '${text}`, LogCategory.Simulator);
+        if (window.speechSynthesis) {
+            var msg = new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(msg);
+        }
     }
 }
 

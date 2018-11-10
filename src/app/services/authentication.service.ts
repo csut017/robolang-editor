@@ -29,7 +29,7 @@ export class AuthenticationService {
   token: string = '';
 
   login(username, password): Observable<login> {
-    const url = `${environment.baseURL}login`;
+    const url = `${environment.apiURL}login`;
     return this.http.post<login>(url, {
       'user': username,
       'password': password,

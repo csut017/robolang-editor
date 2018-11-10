@@ -15,7 +15,7 @@ export class RobotsService {
     private messageService: MessageService) { }
 
   getRobots(page: number = 0): Observable<Robot[]> {
-    const url = `${environment.baseURL}robots?p=${page}&l=100`;
+    const url = `${environment.apiURL}robots?p=${page}&l=100`;
     this.log('Fetching robots');
     return this.http.get<any>(url)
       .pipe(
@@ -26,7 +26,7 @@ export class RobotsService {
   }
 
   getRobot(id: number): Observable<Robot> {
-    const url = environment.baseURL + `robots/${id}`;
+    const url = environment.apiURL + `robots/${id}`;
     this.log(`Fetching robot with id of ${id}`);
     return this.http.get<Robot>(url)
       .pipe(
@@ -36,7 +36,7 @@ export class RobotsService {
   }
 
   getResourcesForRobot(robot: Robot): Observable<Robot> {
-    const url = environment.baseURL + `robots/${robot.id}/scripts/resources`;
+    const url = environment.apiURL + `robots/${robot.id}/scripts/resources`;
     this.log(`Fetching script resources for robot with id of ${robot.id}`);
     return this.http.get<any>(url)
       .pipe(
@@ -52,7 +52,7 @@ export class RobotsService {
   }
 
   getScriptsForRobot(robot: Robot): Observable<Robot> {
-    const url = environment.baseURL + `robots/${robot.id}/scripts`;
+    const url = environment.apiURL + `robots/${robot.id}/scripts`;
     this.log(`Fetching scripts for robot with id of ${robot.id}`);
     var scripts = this.http.get<any>(url)
       .pipe(

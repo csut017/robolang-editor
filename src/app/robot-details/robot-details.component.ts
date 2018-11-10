@@ -32,7 +32,7 @@ export class RobotDetailsComponent implements OnInit, OnChanges {
     if (this.currentRobot.patient) {
       this.information.patient = this.currentRobot.patient;
       if (this.currentRobot.nhi) this.information.patient += ' [' + this.currentRobot.nhi + ']';
-      this.scriptsDownloadLocation = environment.baseURL + `robots/${this.currentRobot.id}/scripts/all`;
+      this.scriptsDownloadLocation = environment.apiURL + `robots/${this.currentRobot.id}/scripts/all`;
     }
     if (this.currentRobot.lastAccess) {
       this.information.lastAccess = moment(this.currentRobot.lastAccess).fromNow();

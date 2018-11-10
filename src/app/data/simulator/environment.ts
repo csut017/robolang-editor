@@ -3,6 +3,7 @@ import { ASTNode, ASTToken } from "src/app/services/validation.service";
 import { FunctionExecution, DefineFunction, StartFunction, DefineOrSetVariable, SaySpeech, PlaySound, ShowScreen } from "./functions";
 import { MessageLog } from "./message-log";
 import { VariableTable } from "./variable-table";
+import { RobotResource } from "../robot-resource";
 
 export class ExecutionEnvironment {
     functions: FunctionDefinition[] = [];
@@ -39,6 +40,11 @@ export class ExecutionEnvironment {
         throw `Unknown function '${name}'`;
     }
 
+    findResource(name: string): RobotResource {
+        const res = this.script.resources.find(r => r.name == name);
+        return res;
+    }
+
     resolveArguments(node: ASTNode): ResolvedArguments {
         let args = {};
         (node.args || []).forEach(arg => {
@@ -54,9 +60,25 @@ export class ExecutionEnvironment {
             case 'Constant':
                 return this.resolveConstant(node.token);
 
+            case 'Reference':
+                return this.resolveReference(node.token.value);
+
             default:
                 throw `Unknown node ${node.type}`;
         }
+    }
+
+    resolveReference(name: string): any {
+        const variable = this.variables.get(name);
+        if (variable) return variable.value;
+
+        const res = this.findResource(name);
+        if (res) {
+            this.log.addMessage(`Resolving tags in ${res.resource}`);
+            return res.resource;
+        }
+
+        throw `Unknown reference ${name}`;
     }
 
     resolveConstant(tok: ASTToken): any {

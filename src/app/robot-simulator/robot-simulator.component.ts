@@ -50,7 +50,7 @@ export class RobotSimulatorComponent implements OnInit, OnChanges {
           this.validationService.compile(Script.from(scriptToCompile))
             .subscribe(res => {
               this.simulator.addMessage(`...compiled script '${scriptToCompile.name}'`);
-              this.simulator.addScript(this.validationService.generateInformation(res));
+              this.simulator.addScript(this.validationService.generateInformation(res), scriptToCompile.resources);
               (res.scriptCalls || []).forEach(call => {
                 let nextScript = scripts[call.name];
                 if (nextScript) {

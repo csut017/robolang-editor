@@ -134,7 +134,7 @@ export class ValidationService {
   }
 
   compile(script: Script): Observable<ValidationResult> {
-    const url = `${environment.baseURL}robotScripts/compile`;
+    const url = `${environment.apiURL}robotScripts/compile`;
     this.log(`Compiling script ${script.name}`);
     return this.http.post(url, {
       script: script.script

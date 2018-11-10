@@ -16,7 +16,7 @@ export class ScriptResourceService {
     private messageService: MessageService) { }
 
   getScriptResource(scriptID: number, resourceID: number): Observable<ScriptResource> {
-    const url = environment.baseURL + `robotScripts/${scriptID}/resources/${resourceID}`;
+    const url = environment.apiURL + `robotScripts/${scriptID}/resources/${resourceID}`;
     this.log(`Fetching script resource with id of ${resourceID}`);
     return this.http.get<ScriptResource>(url)
       .pipe(
@@ -26,7 +26,7 @@ export class ScriptResourceService {
   }
 
   getResourceMappings(): Observable<ScriptValue[]> {
-    const url = environment.baseURL + `/resources/types`;
+    const url = environment.apiURL + `/resources/types`;
     this.log(`Fetching resource mappings`);
     return this.http.get<ScriptValue[]>(url)
       .pipe(

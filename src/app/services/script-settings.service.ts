@@ -51,27 +51,27 @@ export class ScriptSettingsService {
   }
 
   private download(): Observable<ScriptSettings> {
-    let categories = this.http.get<any>(`${environment.baseURL}robotScripts/categories?l=100`)
+    let categories = this.http.get<any>(`${environment.apiURL}robotScripts/categories?l=100`)
       .pipe(
         tap(_ => this.log('Fetched categories')),
         catchError(this.handleError('getCategories', []))
       );
-    let dataTypes = this.http.get<any>(`${environment.baseURL}settings/dataTypes?l=100`)
+    let dataTypes = this.http.get<any>(`${environment.apiURL}settings/dataTypes?l=100`)
       .pipe(
         tap(_ => this.log('Fetched dataTypes')),
         catchError(this.handleError('getDataTypes', []))
       );
-      let resourceTypes = this.http.get<any>(`${environment.baseURL}resourceTypes?l=100`)
+      let resourceTypes = this.http.get<any>(`${environment.apiURL}resourceTypes?l=100`)
       .pipe(
         tap(_ => this.log('Fetched resourceTypes')),
         catchError(this.handleError('getResourceTypes', []))
       );
-    let resourceTypes2 = this.http.get<any>(`${environment.baseURL}resourceTypes/v2?l=100`)
+    let resourceTypes2 = this.http.get<any>(`${environment.apiURL}resourceTypes/v2?l=100`)
       .pipe(
         tap(_ => this.log('Fetched resourceTypes')),
         catchError(this.handleError('getResourceTypes', []))
       );
-    let languages = this.http.get<any>(`${environment.baseURL}languages?l=100`)
+    let languages = this.http.get<any>(`${environment.apiURL}languages?l=100`)
       .pipe(
         tap(_ => this.log('Fetched languages')),
         catchError(this.handleError('languages', []))
