@@ -1,5 +1,6 @@
 import * as moment from 'moment';
 import { ValidationResult, ASTNode, ASTToken } from '../services/validation.service';
+import { ExecutionEnvironment } from './simulator/environment';
 
 export class RobotSimulator {
     messages: LogMessage[];
@@ -70,8 +71,8 @@ export class RobotSimulator {
 
     private executeNode(script: InternalScript, node: ASTNode) {
         let env = script.environment;
-        let args = env.resolveArguments(node);
         let func = env.findFunction(node.token.value);
+        let args = env.resolveArguments(node);
         func.execute(args, node);
     }
 
@@ -94,86 +95,7 @@ export class RobotSimulator {
     }
 }
 
-interface FunctionExecution {
-    execute(ResolvedArguments, ASTNode);
-}
-
-class ExecutionEnvironment {
-    functions: FunctionDefinition[] = [];
-    coreFunctions: { [index: string]: FunctionExecution } = {};
-    simulator: RobotSimulator;
-
-    constructor(simulator: RobotSimulator) {
-        this.simulator = simulator;
-        this.coreFunctions['function'] = new DefineFunction(this);
-    }
-
-    addFunction(name: string, node: ASTNode): void {
-        let func = new FunctionDefinition();
-        func.name = name;
-        func.nodes = node.children;
-        func.location = node.token;
-        this.functions.push(func);
-    }
-
-    findFunction(name: string): FunctionExecution {
-        let core = this.coreFunctions[name];
-        if (core) return core;
-        throw `Unknown function '${name}'`;
-    }
-
-    resolveArguments(node: ASTNode): ResolvedArguments {
-        let args = {};
-        (node.args || []).forEach(arg => {
-            let name = arg.token.value,
-                value = this.resolveNode(arg.children[0]);
-            args[name] = value;
-        })
-        return args;
-    }
-
-    resolveNode(node: ASTNode): any {
-        switch (node.type) {
-            case 'Constant':
-                return this.resolveConstant(node.token);
-
-            default:
-                throw `Unknown node ${node.type}`;
-        }
-    }
-
-    resolveConstant(tok: ASTToken): any {
-        switch (tok.type) {
-            case 'TEXT':
-                return tok.value;
-
-            default:
-                throw `Unknown contant type ${tok.type}`;
-        }
-    }
-}
-
-class DefineFunction implements FunctionExecution {
-    env: ExecutionEnvironment;
-
-    constructor(env: ExecutionEnvironment) {
-        this.env = env;
-    }
-
-    execute(args: ResolvedArguments, node: ASTNode) {
-        let name = args['name'];
-        this.env.simulator.addMessage(`Defining function '${name}`, LogCategory.Simulator);
-        this.env.addFunction(name, node);
-    }
-}
-
-type ResolvedArguments = { [index: string]: any };
-
-class FunctionDefinition {
-    name: string;
-    nodes: ASTNode[];
-    location: ASTToken;
-}
+export type ResolvedArguments = { [index: string]: any };
 
 class InternalScript extends ValidationResult {
     isCurrent: boolean;
@@ -189,9 +111,13 @@ class InternalScript extends ValidationResult {
 
     start(simulator: RobotSimulator): InternalScript {
         let started = new InternalScript(this);
-        started.currentFrame = started.frames.push(new ScriptFrame(started.ast));
-        started.environment = new ExecutionEnvironment(simulator);
+        started.currentFrame = started.frames.push(new ScriptFrame(started.ast, true));
+        started.environment = new ExecutionEnvironment(started, simulator);
         return started;
+    }
+
+    startFrame(nodes: ASTNode[]) {
+        this.currentFrame = this.frames.push(new ScriptFrame(nodes));
     }
 
     getCurrent(): ASTNode {
@@ -221,9 +147,9 @@ class ScriptFrame {
     nodes: ASTNode[];
     currentFrame: number;
 
-    constructor(nodes: ASTNode[]) {
+    constructor(nodes: ASTNode[], isRoot?: boolean) {
         this.nodes = nodes;
-        this.currentFrame = 0;
+        this.currentFrame = isRoot ? 0 : -1;
     }
 
     getCurrent(): ASTNode {
@@ -238,12 +164,11 @@ class ScriptFrame {
     }
 }
 
-const LogCategory = {
-    Simulator: 'Simulator' as 'Simulator',
-    Control: 'Control' as 'Control',
-    Error: 'Error' as 'Error'
-}
-type LogCategory = (typeof LogCategory)[keyof typeof LogCategory];
+export class LogCategory {
+    static Simulator: string = 'Simulator';
+    static Control: string = 'Control';
+    static Error: string = 'Error';
+};
 
 export class LogMessage {
     when = moment();
