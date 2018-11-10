@@ -1,17 +1,25 @@
-import { RobotSimulator, ResolvedArguments } from "../robot-simulator";
+import { InternalScript, } from "../robot-simulator";
 import { ASTNode, ASTToken } from "src/app/services/validation.service";
-import { FunctionExecution, DefineFunction, StartFunction } from "./functions";
+import { FunctionExecution, DefineFunction, StartFunction, DefineOrSetVariable, SaySpeech, PlaySound, ShowScreen } from "./functions";
+import { MessageLog } from "./message-log";
+import { VariableTable } from "./variable-table";
 
 export class ExecutionEnvironment {
     functions: FunctionDefinition[] = [];
     coreFunctions: { [index: string]: FunctionExecution } = {};
-    simulator: RobotSimulator;
+    log: MessageLog;
     script: InternalScript;
+    variables: VariableTable;
 
-    constructor(script: InternalScript, simulator: RobotSimulator) {
+    constructor(script: InternalScript, log: MessageLog, parent: ExecutionEnvironment) {
         this.script = script;
-        this.simulator = simulator;
+        this.log = log;
+        this.variables = new VariableTable(parent ? parent.variables : null);
         this.coreFunctions['function'] = new DefineFunction(this);
+        this.coreFunctions['play'] = new PlaySound(this);
+        this.coreFunctions['say'] = new SaySpeech(this);
+        this.coreFunctions['showScreen'] = new ShowScreen(this);
+        this.coreFunctions['variable'] = new DefineOrSetVariable(this);
     }
 
     addFunction(name: string, node: ASTNode): void {
@@ -62,11 +70,25 @@ export class ExecutionEnvironment {
                 }
                 return parseInt(tok.value);
 
+            case 'KEYWORD':
+                switch (tok.value) {
+                    case 'TRUE':
+                        return true;
+
+                    case 'FALSE':
+                        return true;
+
+                    default:
+                        throw `Unknown constant keyword ${tok.type}`;
+                }
+
             default:
-                throw `Unknown contant type ${tok.type}`;
+                throw `Unknown constant type ${tok.type}`;
         }
     }
 }
+
+export type ResolvedArguments = { [index: string]: any };
 
 class FunctionDefinition {
     name: string;

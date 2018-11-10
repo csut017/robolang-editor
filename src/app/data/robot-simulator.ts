@@ -1,9 +1,10 @@
-import * as moment from 'moment';
-import { ValidationResult, ASTNode, ASTToken } from '../services/validation.service';
+import { ValidationResult, ASTNode } from '../services/validation.service';
 import { ExecutionEnvironment } from './simulator/environment';
+import { MessageLog, LogCategory } from './simulator/message-log';
+import { VariableTable } from './simulator/variable-table';
+import { variable } from '@angular/compiler/src/output/output_ast';
 
-export class RobotSimulator {
-    messages: LogMessage[];
+export class RobotSimulator extends MessageLog {
     scripts: InternalScript[];
     stack: InternalScript[];
     error: string;
@@ -11,7 +12,7 @@ export class RobotSimulator {
     currentScript: number;
 
     constructor() {
-        this.messages = [];
+        super();
         this.scripts = [];
         this.stack = [];
         this.currentScript = 0;
@@ -19,13 +20,6 @@ export class RobotSimulator {
 
     initialise(): void {
         this.addMessage('Initialising simulator', LogCategory.Simulator);
-    }
-
-    addMessage(message: string, category?: string): LogMessage {
-        const id = this.messages.length + 1;
-        let msg = new LogMessage(id, message, category || LogCategory.Control);
-        this.messages.unshift(msg);
-        return msg;
     }
 
     start(startingScript: string): void {
@@ -95,9 +89,7 @@ export class RobotSimulator {
     }
 }
 
-export type ResolvedArguments = { [index: string]: any };
-
-class InternalScript extends ValidationResult {
+export class InternalScript extends ValidationResult {
     isCurrent: boolean;
     frames: ScriptFrame[] = [];
     currentFrame: number;
@@ -109,10 +101,12 @@ class InternalScript extends ValidationResult {
         this.source = result.source;
     }
 
-    start(simulator: RobotSimulator): InternalScript {
+    start(log: MessageLog, parent?: InternalScript): InternalScript {
         let started = new InternalScript(this);
         started.currentFrame = started.frames.push(new ScriptFrame(started.ast, true));
-        started.environment = new ExecutionEnvironment(started, simulator);
+        var env: ExecutionEnvironment;
+        if (parent) env = parent.environment;
+        started.environment = new ExecutionEnvironment(started, log, env);
         return started;
     }
 
@@ -161,24 +155,5 @@ class ScriptFrame {
     moveNext(): boolean {
         this.currentFrame++;
         return this.currentFrame < this.nodes.length;
-    }
-}
-
-export class LogCategory {
-    static Simulator: string = 'Simulator';
-    static Control: string = 'Control';
-    static Error: string = 'Error';
-};
-
-export class LogMessage {
-    when = moment();
-    message: string;
-    category: string;
-    id: number;
-
-    constructor(id: number, message: string, category: string) {
-        this.id = id;
-        this.message = message;
-        this.category = category;
     }
 }
