@@ -27,12 +27,24 @@
       <clr-tab>
         <button clrTabLink>Data</button>
         <clr-tab-content *clrIfActive>
-          <clr-stack-view>
-            <clr-stack-block *ngFor="let variable of flattenVariables()">
-              <clr-stack-label>{{variable.name}}</clr-stack-label>
-              <clr-stack-content>{{variable.value}}</clr-stack-content>
-            </clr-stack-block>
-          </clr-stack-view>
+          <table class="table">
+            <thead>
+              <tr>
+                <th class="left">Name</th>
+                <th class="left">Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let variable of flattenVariables()">
+                <td class="left">
+                  {{variable.name}}
+                </td>
+                <td class="left">
+                  {{variable.value}}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </clr-tab-content>
       </clr-tab>
       <clr-tab>
