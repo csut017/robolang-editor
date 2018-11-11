@@ -1,9 +1,10 @@
 import { InternalScript, } from "../robot-simulator";
 import { ASTNode, ASTToken } from "src/app/services/validation.service";
-import { FunctionExecution, DefineFunction, StartFunction, DefineOrSetVariable, SaySpeech, PlaySound, ShowScreen } from "./functions";
+import { FunctionExecution, DefineFunction, StartFunction, DefineOrSetVariable, SaySpeech, PlaySound, ShowScreen, EnterWait } from "./functions";
 import { MessageLog } from "./message-log";
 import { VariableTable } from "./variable-table";
 import { RobotResource } from "../robot-resource";
+import * as moment from 'moment';
 
 export class ExecutionEnvironment {
     functions: FunctionDefinition[] = [];
@@ -21,6 +22,7 @@ export class ExecutionEnvironment {
         this.coreFunctions['say'] = new SaySpeech(this);
         this.coreFunctions['showScreen'] = new ShowScreen(this);
         this.coreFunctions['variable'] = new DefineOrSetVariable(this);
+        this.coreFunctions['wait'] = new EnterWait(this);
     }
 
     addFunction(name: string, node: ASTNode): void {
@@ -40,8 +42,10 @@ export class ExecutionEnvironment {
         throw `Unknown function '${name}'`;
     }
 
-    findResource(name: string): RobotResource {
-        const res = this.script.resources.find(r => r.name == name);
+    findResource(name: string, parentType?: string): RobotResource {
+        const res = parentType 
+            ? this.script.resources.find(r => r.name == name && r.type == parentType)
+            : this.script.resources.find(r => r.name == name);
         return res;
     }
 
@@ -49,32 +53,32 @@ export class ExecutionEnvironment {
         let args = {};
         (node.args || []).forEach(arg => {
             let name = arg.token.value,
-                value = this.resolveNode(arg.children[0]);
+                value = this.resolveNode(arg.children[0], name);
             args[name] = value;
         })
         return args;
     }
 
-    resolveNode(node: ASTNode): any {
+    resolveNode(node: ASTNode, parentType: string): any {
         switch (node.type) {
             case 'Constant':
                 return this.resolveConstant(node.token);
 
             case 'Reference':
-                return this.resolveReference(node.token.value);
+                return this.resolveReference(node.token.value, parentType);
 
             default:
                 throw `Unknown node ${node.type}`;
         }
     }
 
-    resolveReference(name: string): any {
+    resolveReference(name: string, parentType: string): any {
         const variable = this.variables.get(name);
         if (variable) return variable.value;
 
-        const res = this.findResource(name);
+        const res = this.findResource(name, parentType);
         if (res) {
-            this.log.addMessage(`Resolving tags in ${res.resource}`);
+            this.log.addMessage(`Resolving tags in "${res.resource}"`);
             return res.resource;
         }
 
@@ -104,6 +108,9 @@ export class ExecutionEnvironment {
                         throw `Unknown constant keyword ${tok.type}`;
                 }
 
+            case 'DURATION':
+                return new Duration().parse(tok.value);
+
             default:
                 throw `Unknown constant type ${tok.type}`;
         }
@@ -116,4 +123,72 @@ class FunctionDefinition {
     name: string;
     nodes: ASTNode[];
     location: ASTToken;
+}
+
+export class Duration {
+    private seconds: number = 0;
+
+    toString(): string {
+        return `${this.seconds}s`;
+    }
+
+    addSeconds(amount: number): Duration {
+        this.seconds += amount;
+        return this;
+    }
+
+    addMinutes(amount: number): Duration {
+        this.seconds += (amount * 60);
+        return this;
+    }
+
+    addHours(amount: number): Duration {
+        this.seconds += (amount * 3600);
+        return this;
+    }
+
+    addDays(amount: number): Duration {
+        this.seconds += (amount * 86400);
+        return this;
+    }
+
+    parse(input: string, start: number = 0): Duration {
+        this.seconds = start;
+        let num = '';
+        for (let c of input) {
+            if (c >= '0' && c <= '9') {
+                num += c;
+            } else {
+                if (num) {
+                    let val = parseInt(num);
+                    num = '';
+                    switch (c) {
+                        case 's':
+                            this.seconds += val;
+                            break;
+
+                        case 'm':
+                            this.seconds += (val * 60);
+                            break;
+
+                        case 'h':
+                            this.seconds += (val * 3600);
+                            break;
+
+                        case 'd':
+                            this.seconds += (val * 86400);
+                            break;
+                    }
+                } else {
+                    throw `Invalid duration '${input}'`;
+                }
+            }
+        }
+
+        return this;
+    }
+
+    toTime(): moment.Moment {
+        return moment().add(this.seconds, 's');
+    }
 }

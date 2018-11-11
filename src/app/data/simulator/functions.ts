@@ -38,12 +38,27 @@ export class DefineOrSetVariable implements FunctionExecution {
             } else {
                 newVar = defaultValue;
             }
-            this.env.log.addMessage(`Using '${newVar}' for variable '${name}'`, LogCategory.Simulator);
+            let varText = typeof newVar == 'string'
+                ? `'${newVar}'`
+                : newVar.toString();
+            this.env.log.addMessage(`Using ${varText} for variable '${name}'`, LogCategory.Simulator);
             this.env.variables.setLocal(name, newVar, isServer);
         } else {
             this.env.log.addMessage(`Setting ${varType} variable to '${name}'`, LogCategory.Simulator);
             this.env.variables.set(name, value, isServer);
         }
+    }
+}
+
+export class EnterWait implements FunctionExecution {
+    constructor(private env: ExecutionEnvironment) {
+    }
+
+    execute(args: ResolvedArguments, node: ASTNode) {
+        let priority = args['priority'] || 5,
+            timeout = args['timeout'],
+            timeoutText = timeout ? timeout.toString() : 'never';
+        this.env.log.addMessage(`Entering wait state [priority=${priority},timeout=${timeoutText}]`, LogCategory.Simulator);
     }
 }
 
@@ -53,7 +68,7 @@ export class PlaySound implements FunctionExecution {
 
     execute(args: ResolvedArguments, node: ASTNode) {
         let name = args['sound'];
-        this.env.log.addMessage(`Playing sound '${name}`, LogCategory.Simulator);
+        this.env.log.addMessage(`Playing sound '${name}'`, LogCategory.Simulator);
         let res = this.env.findResource(name);
         if (res) {
             const url = `${environment.baseURL}${res.url}`;
