@@ -17,7 +17,7 @@ export class ScriptService {
     private messageService: MessageService) { }
 
   getScripts(page: number = 0): Observable<Script[]> {
-    const url = `${environment.baseURL}robotScripts?p=${page}&l=100`;
+    const url = `${environment.apiURL}robotScripts?p=${page}&l=100`;
     this.log('Fetching scripts');
     return this.http.get<any>(url)
       .pipe(
@@ -28,7 +28,7 @@ export class ScriptService {
   }
 
   getScript(id: number): Observable<Script> {
-    const url = environment.baseURL + `robotScripts/v2/${id}`;
+    const url = environment.apiURL + `robotScripts/v2/${id}`;
     this.log(`Fetching script with id of ${id}`);
     return this.http.get<any>(url)
       .pipe(
@@ -43,7 +43,7 @@ export class ScriptService {
   }
 
   getScriptVersion(scriptID: number, versionID: number): Observable<ScriptVersion> {
-    const url = environment.baseURL + `robotScripts/v2/${scriptID}/versions/${versionID}`;
+    const url = environment.apiURL + `robotScripts/v2/${scriptID}/versions/${versionID}`;
     this.log(`Fetching version with id of ${versionID}`);
     return this.http.get<any>(url)
       .pipe(
@@ -62,7 +62,7 @@ export class ScriptService {
   }
 
   delete(script: Script): Observable<any> {
-    const url = environment.baseURL + `robotScripts/${script.id}`;
+    const url = environment.apiURL + `robotScripts/${script.id}`;
     this.log(`Deleting script with id of ${script.id}`);
     return this.http.delete<any>(url)
       .pipe(
@@ -72,7 +72,7 @@ export class ScriptService {
   }
 
   format(script: string): Observable<string> {
-    const url = `${environment.baseURL}robotScripts/format`;
+    const url = `${environment.apiURL}robotScripts/format`;
     this.log(`Formating script`);
     return this.http.post(url, {
       script: script
@@ -87,7 +87,7 @@ export class ScriptService {
   }
 
   generateVersion(script: Script, description: string): Observable<any> {
-    const url = environment.baseURL + `robotScripts/v2/${script.id}/versions`;
+    const url = environment.apiURL + `robotScripts/v2/${script.id}/versions`;
     this.log(`Generating version for script with id of ${script.id}`);
     var data = new Script();
     data.script = script.script;
@@ -104,8 +104,8 @@ export class ScriptService {
   }
 
   private update(script: Script): Observable<any> {
-    const url = environment.baseURL + `robotScripts/${script.id}`;
-    const url2 = environment.baseURL + `robotScripts/v2/${script.id}`;
+    const url = environment.apiURL + `robotScripts/${script.id}`;
+    const url2 = environment.apiURL + `robotScripts/v2/${script.id}`;
     this.log(`Updating script with id of ${script.id}`);
     return this.http.put<any>(url2, script)
       .pipe(
@@ -133,7 +133,7 @@ export class ScriptService {
   }
 
   private addNew(script: Script): Observable<any> {
-    const url = environment.baseURL + `robotScripts/v2`;
+    const url = environment.apiURL + `robotScripts/v2`;
     this.log(`Adding new script`);
     return this.http.post<any>(url, script)
       .pipe(
