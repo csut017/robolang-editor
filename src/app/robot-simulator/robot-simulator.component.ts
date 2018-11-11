@@ -5,6 +5,7 @@ import { RobotSimulator } from '../data/robot-simulator';
 import { ValidationService } from '../services/validation.service';
 import { Script } from '../data/script';
 import { from, Observable } from 'rxjs';
+import { Variable, VariableTable } from '../data/simulator/variable-table';
 
 @Component({
   selector: 'app-robot-simulator',
@@ -70,4 +71,19 @@ export class RobotSimulatorComponent implements OnInit, OnChanges {
       });
     emitter.next(this.startScript);
   }
+
+  flattenVariables(): Variable[] {
+    let out: Variable[] = [];
+    this.appendVariables(out, this.simulator.executionEnvironment.variables);
+    return out;
+  }
+
+    private appendVariables(out: Variable[], variables: VariableTable) {
+      for (let outVar of variables.variables) {
+        out.push(outVar);
+      }
+      if (variables.parent) {
+        this.appendVariables(out, variables.parent);
+      }
+    }
 }

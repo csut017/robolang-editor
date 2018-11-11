@@ -9,6 +9,7 @@ export class RobotSimulator extends MessageLog {
     error: string;
     finished: boolean;
     currentScript: number;
+    executionEnvironment: ExecutionEnvironment;
 
     constructor() {
         super();
@@ -19,6 +20,12 @@ export class RobotSimulator extends MessageLog {
 
     initialise(): void {
         this.addMessage('Initialising simulator', LogCategory.Simulator);
+        this.scripts = [];
+        this.stack = [];
+        this.currentScript = 0;
+        this.executionEnvironment = null;
+        this.finished = false;
+        this.error = null;
     }
 
     start(startingScript: string): void {
@@ -59,6 +66,7 @@ export class RobotSimulator extends MessageLog {
 
             currentScript = this.stack[this.currentScript - 1];
             hasNext = currentScript.hasNext();
+            this.executionEnvironment = currentScript.environment;
         }
     }
 
@@ -79,17 +87,20 @@ export class RobotSimulator extends MessageLog {
         }
 
         if (this.currentScript) {
-            this.stack[this.currentScript - 1].isCurrent = false;
+            this.stack[this.currentScript - 1].state.isCurrent = false;
         }
         let newScript = scriptToStart.start(this);
-        newScript.isCurrent = true;
+        newScript.state.isCurrent = true;
         this.currentScript = this.stack.push(newScript);
         this.addMessage(`Starting script ${scriptName}`, LogCategory.Simulator);
+
+        let currentScript = this.stack[this.currentScript - 1];
+        this.executionEnvironment = currentScript.environment;
     }
 }
 
 export class InternalScript extends ValidationResult {
-    isCurrent: boolean;
+    state: ScriptState = new ScriptState();
     frames: ScriptFrame[] = [];
     currentFrame: number;
     environment: ExecutionEnvironment;
@@ -104,6 +115,7 @@ export class InternalScript extends ValidationResult {
 
     start(log: MessageLog, parent?: InternalScript): InternalScript {
         let started = new InternalScript(this, this.resources);
+        started.state = this.state;
         started.currentFrame = started.frames.push(new ScriptFrame(started.ast, true));
         var env: ExecutionEnvironment;
         if (parent) env = parent.environment;
@@ -157,4 +169,9 @@ class ScriptFrame {
         this.currentFrame++;
         return this.currentFrame < this.nodes.length;
     }
+}
+
+class ScriptState {
+    isCurrent: boolean;
+    isFinished: boolean;
 }

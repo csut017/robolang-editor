@@ -27,7 +27,12 @@
       <clr-tab>
         <button clrTabLink>Data</button>
         <clr-tab-content *clrIfActive>
-          ...
+          <clr-stack-view>
+            <clr-stack-block *ngFor="let variable of flattenVariables()">
+              <clr-stack-label>{{variable.name}}</clr-stack-label>
+              <clr-stack-content>{{variable.value}}</clr-stack-content>
+            </clr-stack-block>
+          </clr-stack-view>
         </clr-tab-content>
       </clr-tab>
       <clr-tab>
@@ -39,7 +44,7 @@
       <clr-tab>
         <button clrTabLink>Loaded Scripts</button>
         <clr-tab-content *clrIfActive>
-          <table class="table table-compact">
+          <table class="table">
             <thead>
               <tr>
                 <th class="left">Name</th>
@@ -47,7 +52,10 @@
             </thead>
             <tbody>
               <tr *ngFor="let script of simulator.scripts">
-                <td class="left">{{script.source.name}}</td>
+                <td class="left">
+                  <clr-icon shape="play" class="is-solid" *ngIf="script.state.isCurrent"></clr-icon>
+                  {{script.source.name}}
+                </td>
               </tr>
             </tbody>
           </table>

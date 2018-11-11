@@ -1,8 +1,7 @@
 export class VariableTable {
     variables: Variable[] = [];
 
-    constructor(private parent?: VariableTable) {
-
+    constructor(public parent?: VariableTable) {
     }
 
     get(name: string): Variable {
