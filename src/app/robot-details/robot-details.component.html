@@ -76,7 +76,7 @@
         </clr-tree-node>
       </div>
       <div class="card-block">
-        <button class="btn btn-success-outline pull-right" *ngIf="currentItem && currentItem.source=='Configured'" (click)="simulatorVisible=true">
+        <button class="btn btn-success-outline pull-right" *ngIf="currentItem && currentItem.source" (click)="simulatorVisible=true">
           Open in Simulator
         </button>
         <a class="btn btn-outline" [href]="scriptsDownloadLocation">
