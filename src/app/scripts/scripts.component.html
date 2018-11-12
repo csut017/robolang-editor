@@ -4,9 +4,15 @@
   <div class="content-container">
     <div class="content-area">
       <h1>
-        <div class="clr-row">
+        <div class="clr-row script-header">
           <div class="clr-col">
-            {{currentScript ? (currentScript.name || 'new script') : 'Scripts'}}
+            <div *ngIf="currentScript">
+              {{currentScript.name || 'new script'}}
+              <span class="badge badge-info">v{{currentScript.format || 1}}</span>
+            </div>
+            <div *ngIf="!currentScript">
+              Scripts
+            </div>
           </div>
           <div class="clr-col">
             <div class="alert alert-success" *ngIf="actionMessage">
