@@ -1,7 +1,8 @@
-import { ExecutionEnvironment, ResolvedArguments } from "./environment";
+import { ExecutionEnvironment, ResolvedArguments, Duration } from "./environment";
 import { ASTNode } from "src/app/services/validation.service";
 import { LogCategory } from "./message-log";
 import { environment } from "src/environments/environment";
+import { WaitFrame } from "./wait-state";
 
 export interface FunctionExecution {
     execute(ResolvedArguments, ASTNode);
@@ -59,6 +60,42 @@ export class EnterWait implements FunctionExecution {
             timeout = args['timeout'],
             timeoutText = timeout ? timeout.toString() : 'never';
         this.env.log.addMessage(`Entering wait state [priority=${priority},timeout=${timeoutText}]`, LogCategory.Simulator);
+
+        let wait = this.env.waitState.add(priority);
+        for (var child of node.children) {
+            this.processChild(child, wait, timeout);
+        }
+
+        this.env.state = 'Waiting';
+    }
+
+    private processChild(node: ASTNode, wait: WaitFrame, timeout: Duration) {
+        const args = this.env.resolveArguments(node);
+        switch (node.token.value) {
+            case 'response':
+                let text = args['text'];
+                this.env.log.addMessage(`Register response=${text}`);
+                wait.addResponse(node, text);
+                break;
+
+            case 'timeout':
+                this.env.log.addMessage(`Register timeout`);
+                wait.addTimeout(node, timeout);
+                break;
+
+            case 'default':
+                let varName = args['variable'];
+                if (varName) {
+                    this.env.log.addMessage(`Register default into ${varName}`);
+                } else {
+                    this.env.log.addMessage('Register default');
+                }
+                wait.addDefault(node, varName);
+                break;
+
+            default:
+                throw `Unknown wait child: '${node.token.type}'`;
+        }
     }
 }
 

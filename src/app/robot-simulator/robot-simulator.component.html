@@ -50,7 +50,28 @@
       <clr-tab>
         <button clrTabLink>Wait State</button>
         <clr-tab-content *clrIfActive>
-          ...
+          <table class="table">
+            <thead>
+              <tr>
+                <th class="left">Priority</th>
+                <th class="left">Value</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let wait of flattenWaitState()">
+                <td class="left">
+                  {{wait.priority}}
+                </td>
+                <td class="left">
+                  {{wait.value}}
+                </td>
+                <td class="right">
+                    <button class="btn btn-sm" (click)="processInput(wait)">Send</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </clr-tab-content>
       </clr-tab>
       <clr-tab>

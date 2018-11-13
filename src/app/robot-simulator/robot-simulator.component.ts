@@ -4,8 +4,9 @@ import { Robot } from '../data/robot';
 import { RobotSimulator } from '../data/robot-simulator';
 import { ValidationService } from '../services/validation.service';
 import { Script } from '../data/script';
-import { from, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Variable, VariableTable } from '../data/simulator/variable-table';
+import { WaitHandler, WaitHandlerType } from '../data/simulator/wait-state';
 
 @Component({
   selector: 'app-robot-simulator',
@@ -72,18 +73,49 @@ export class RobotSimulatorComponent implements OnInit, OnChanges {
     emitter.next(this.startScript);
   }
 
+  processInput(input: WaitStateDisplay) {
+    if (input.handler.type == WaitHandlerType.timeout) {
+      this.simulator.processTimeout();
+    } else if (input.handler.type == WaitHandlerType.default) {
+      this.simulator.processInput('');
+    } else {
+      this.simulator.processInput(input.handler.text);
+    }
+  }
+
   flattenVariables(): Variable[] {
     let out: Variable[] = [];
     this.appendVariables(out, this.simulator.executionEnvironment.variables);
     return out;
   }
 
-    private appendVariables(out: Variable[], variables: VariableTable) {
-      for (let outVar of variables.variables) {
-        out.push(outVar);
-      }
-      if (variables.parent) {
-        this.appendVariables(out, variables.parent);
+  private appendVariables(out: Variable[], variables: VariableTable) {
+    for (let outVar of variables.variables) {
+      out.push(outVar);
+    }
+    if (variables.parent) {
+      this.appendVariables(out, variables.parent);
+    }
+  }
+
+  flattenWaitState(): WaitStateDisplay[] {
+    let out: WaitStateDisplay[] = [];
+    for (let wait of this.simulator.waitState.stack) {
+      const priority = wait.priority;
+      for (let resp of wait.responseHandlers) {
+        out.push(WaitStateDisplay.response(priority, resp));
       }
     }
+    return out;
+  }
+}
+
+class WaitStateDisplay {
+  constructor(public priority: number,
+    public value: string,
+    public handler: WaitHandler) { }
+
+  static response(priority: number, handler: WaitHandler): WaitStateDisplay {
+    return new WaitStateDisplay(priority, `Response: text='${handler.text}'`, handler);
+  }
 }

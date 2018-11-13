@@ -5,6 +5,7 @@ import { MessageLog } from "./message-log";
 import { VariableTable } from "./variable-table";
 import { RobotResource } from "../robot-resource";
 import * as moment from 'moment';
+import { WaitState } from "./wait-state";
 
 export class ExecutionEnvironment {
     functions: FunctionDefinition[] = [];
@@ -12,6 +13,8 @@ export class ExecutionEnvironment {
     log: MessageLog;
     script: InternalScript;
     variables: VariableTable;
+    waitState: WaitState;
+    state: string;
 
     constructor(script: InternalScript, log: MessageLog, parent: ExecutionEnvironment) {
         this.script = script;

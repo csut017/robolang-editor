@@ -2,6 +2,7 @@ import { ValidationResult, ASTNode } from '../services/validation.service';
 import { ExecutionEnvironment } from './simulator/environment';
 import { MessageLog, LogCategory } from './simulator/message-log';
 import { RobotResource } from './robot-resource';
+import { WaitState, WaitHandler } from './simulator/wait-state';
 
 export class RobotSimulator extends MessageLog {
     scripts: InternalScript[];
@@ -10,12 +11,10 @@ export class RobotSimulator extends MessageLog {
     finished: boolean;
     currentScript: number;
     executionEnvironment: ExecutionEnvironment;
+    waitState: WaitState;
 
     constructor() {
         super();
-        this.scripts = [];
-        this.stack = [];
-        this.currentScript = 0;
     }
 
     initialise(): void {
@@ -26,6 +25,7 @@ export class RobotSimulator extends MessageLog {
         this.executionEnvironment = null;
         this.finished = false;
         this.error = null;
+        this.waitState = new WaitState();
     }
 
     start(startingScript: string): void {
@@ -43,6 +43,15 @@ export class RobotSimulator extends MessageLog {
             return;
         }
 
+        if (this.executionEnvironment.state == 'Waiting') {
+            this.addMessage('Waiting for input', LogCategory.Simulator);
+            return;
+        }
+
+        this.executeCurrent();
+    }
+
+    private executeCurrent() {
         let currentScript = this.stack[this.currentScript - 1];
         let currentNode = currentScript.getCurrent();
         if (currentNode) {
@@ -55,8 +64,14 @@ export class RobotSimulator extends MessageLog {
             }
         }
 
+        if (this.executionEnvironment.state == 'Waiting') {
+            this.addMessage('Waiting for input', LogCategory.Simulator);
+            return;
+        }
+
         let hasNext = currentScript.moveNext();
         while (!hasNext) {
+            currentScript.environment.state = 'Completed';
             this.currentScript--;
             this.stack.pop();
             if (!this.currentScript) {
@@ -65,9 +80,48 @@ export class RobotSimulator extends MessageLog {
             }
 
             currentScript = this.stack[this.currentScript - 1];
+            currentScript.environment.state = 'Running';
             hasNext = currentScript.hasNext();
             this.executionEnvironment = currentScript.environment;
         }
+    }
+
+    processInput(text: string) {
+        let found = false;
+        var handlerToUse: WaitHandler;
+        for (let frame of this.waitState.stack) {
+            for (let handler of frame.responseHandlers) {
+                if (handler.text == text) {
+                    found = true;
+                    handlerToUse = handler;
+                    break;
+                }
+            }
+            if (found) {
+                break;
+            } else if (frame.defaultHandler) {
+                handlerToUse = frame.defaultHandler;
+                break;
+            }
+        }
+        if (handlerToUse) this.executeHandler(handlerToUse);
+    }
+
+    processTimeout() {
+        var handlerToUse: WaitHandler;
+        for (let frame of this.waitState.stack) {
+            if (frame.timeoutHandler) {
+                handlerToUse = frame.timeoutHandler;
+                break;
+            }
+        }
+        if (handlerToUse) this.executeHandler(handlerToUse);
+    }
+
+    private executeHandler(handler: WaitHandler) {
+        let currentScript = this.stack[this.currentScript - 1];
+        currentScript.findAndSetChild(handler.node);
+        this.executeCurrent();
     }
 
     private executeNode(script: InternalScript, node: ASTNode) {
@@ -89,13 +143,14 @@ export class RobotSimulator extends MessageLog {
         if (this.currentScript) {
             this.stack[this.currentScript - 1].state.isCurrent = false;
         }
-        let newScript = scriptToStart.start(this);
+        let newScript = scriptToStart.start(this, this.waitState);
         newScript.state.isCurrent = true;
         this.currentScript = this.stack.push(newScript);
         this.addMessage(`Starting script ${scriptName}`, LogCategory.Simulator);
 
         let currentScript = this.stack[this.currentScript - 1];
         this.executionEnvironment = currentScript.environment;
+        this.executionEnvironment.state = 'Running';
     }
 }
 
@@ -113,13 +168,14 @@ export class InternalScript extends ValidationResult {
         this.resources = resources;
     }
 
-    start(log: MessageLog, parent?: InternalScript): InternalScript {
+    start(log: MessageLog, waitState: WaitState, parent?: InternalScript): InternalScript {
         let started = new InternalScript(this, this.resources);
         started.state = this.state;
         started.currentFrame = started.frames.push(new ScriptFrame(started.ast, true));
         var env: ExecutionEnvironment;
         if (parent) env = parent.environment;
         started.environment = new ExecutionEnvironment(started, log, env);
+        started.environment.waitState = waitState;
         return started;
     }
 
@@ -147,6 +203,14 @@ export class InternalScript extends ValidationResult {
             this.frames.pop();
         }
         return false;
+    }
+
+    findAndSetChild(child: ASTNode) {
+        if (!this.currentFrame) return;
+        let currentNode = this.getCurrent();
+        let newNode = currentNode.children.find(n => n == child);
+        this.startFrame(newNode.children);
+        this.moveNext();
     }
 }
 
