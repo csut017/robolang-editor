@@ -3,6 +3,7 @@ import { ASTNode } from "src/app/services/validation.service";
 import { LogCategory } from "./message-log";
 import { environment } from "src/environments/environment";
 import { WaitFrame } from "./wait-state";
+import { ScriptManager } from "../robot-simulator";
 
 export interface FunctionExecution {
     execute(ResolvedArguments, ASTNode);
@@ -150,5 +151,21 @@ export class StartFunction implements FunctionExecution {
     execute(args: ResolvedArguments, node: ASTNode) {
         this.env.log.addMessage(`Starting function '${node.token.value}`, LogCategory.Simulator);
         this.env.script.startFrame(this.nodes);
+    }
+}
+
+export class StartScript implements FunctionExecution {
+    constructor(private env: ExecutionEnvironment, private scriptManager: ScriptManager) {
+    }
+
+    execute(args: ResolvedArguments, node: ASTNode) {
+        let name = args['script'];
+        this.env.log.addMessage(`Starting script '${name}`, LogCategory.Simulator);
+        let scriptToStart = this.scriptManager.find(name);
+        if (scriptToStart) {
+            this.scriptManager.startNew(scriptToStart);
+        } else {
+            throw `Unknown script ${name}`;
+        }
     }
 }

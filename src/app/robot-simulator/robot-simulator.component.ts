@@ -31,7 +31,7 @@ export class RobotSimulatorComponent implements OnInit, OnChanges {
     this.simulator.initialise();
 
     let scripts: { [index: string]: RobotScript } = {};
-    this.allScripts.forEach(s => {
+    (this.allScripts || []).forEach(s => {
       scripts[s.name] = s;
       s.compiled = false;
     });

@@ -1,6 +1,6 @@
-import { InternalScript, } from "../robot-simulator";
+import { InternalScript, ScriptManager, } from "../robot-simulator";
 import { ASTNode, ASTToken } from "src/app/services/validation.service";
-import { FunctionExecution, DefineFunction, StartFunction, DefineOrSetVariable, SaySpeech, PlaySound, ShowScreen, EnterWait } from "./functions";
+import { FunctionExecution, DefineFunction, StartFunction, DefineOrSetVariable, SaySpeech, PlaySound, ShowScreen, EnterWait, StartScript } from "./functions";
 import { MessageLog } from "./message-log";
 import { VariableTable } from "./variable-table";
 import { RobotResource } from "../robot-resource";
@@ -16,10 +16,11 @@ export class ExecutionEnvironment {
     waitState: WaitState;
     state: string;
 
-    constructor(script: InternalScript, log: MessageLog, parent: ExecutionEnvironment) {
+    constructor(script: InternalScript, log: MessageLog, parent: ExecutionEnvironment, scriptManager: ScriptManager) {
         this.script = script;
         this.log = log;
         this.variables = new VariableTable(parent ? parent.variables : null);
+        this.coreFunctions['call'] = new StartScript(this, scriptManager);
         this.coreFunctions['function'] = new DefineFunction(this);
         this.coreFunctions['play'] = new PlaySound(this);
         this.coreFunctions['say'] = new SaySpeech(this);

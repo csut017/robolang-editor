@@ -5,23 +5,20 @@ import { RobotResource } from './robot-resource';
 import { WaitState, WaitHandler } from './simulator/wait-state';
 
 export class RobotSimulator extends MessageLog {
-    scripts: InternalScript[];
-    stack: InternalScript[];
+    scriptManager: ScriptManager;
     error: string;
     finished: boolean;
-    currentScript: number;
     executionEnvironment: ExecutionEnvironment;
     waitState: WaitState;
 
     constructor() {
         super();
+        this.scriptManager = new ScriptManager(this);
     }
 
     initialise(): void {
         this.addMessage('Initialising simulator', LogCategory.Simulator);
-        this.scripts = [];
-        this.stack = [];
-        this.currentScript = 0;
+        this.scriptManager.initalise();
         this.executionEnvironment = null;
         this.finished = false;
         this.error = null;
@@ -34,11 +31,11 @@ export class RobotSimulator extends MessageLog {
     }
 
     addScript(script: ValidationResult, resources: RobotResource[]) {
-        this.scripts.push(new InternalScript(script, resources || []));
+        this.scriptManager.add(new InternalScript(script, resources || []));
     }
 
     executeNext(): void {
-        if (!this.currentScript) {
+        if (!this.scriptManager.hasCurrent()) {
             this.addMessage('Simulator has finished', LogCategory.Error);
             return;
         }
@@ -52,14 +49,14 @@ export class RobotSimulator extends MessageLog {
     }
 
     private executeCurrent() {
-        let currentScript = this.stack[this.currentScript - 1];
+        let currentScript = this.scriptManager.getCurrent();
         let currentNode = currentScript.getCurrent();
         if (currentNode) {
             try {
                 this.executeNode(currentScript, currentNode);
             } catch (error) {
                 this.addMessage(`!! ${error} !!`, LogCategory.Error);
-                this.currentScript = 0;
+                this.scriptManager.clearCurrent();
                 return;
             }
         }
@@ -69,17 +66,16 @@ export class RobotSimulator extends MessageLog {
             return;
         }
 
+        currentScript = this.scriptManager.getCurrent();
         let hasNext = currentScript.moveNext();
         while (!hasNext) {
             currentScript.environment.state = 'Completed';
-            this.currentScript--;
-            this.stack.pop();
-            if (!this.currentScript) {
+            if (!this.scriptManager.returnToPrevious()) {
                 this.finished = true;
                 break;
             }
 
-            currentScript = this.stack[this.currentScript - 1];
+            currentScript = this.scriptManager.getCurrent();
             currentScript.environment.state = 'Running';
             hasNext = currentScript.hasNext();
             this.executionEnvironment = currentScript.environment;
@@ -119,8 +115,10 @@ export class RobotSimulator extends MessageLog {
     }
 
     private executeHandler(handler: WaitHandler) {
-        let currentScript = this.stack[this.currentScript - 1];
+        let currentScript = this.scriptManager.getCurrent();
         currentScript.findAndSetChild(handler.node);
+        this.executionEnvironment.state = 'Running';
+        this.waitState.remove(handler.parent);
         this.executeCurrent();
     }
 
@@ -132,25 +130,73 @@ export class RobotSimulator extends MessageLog {
     }
 
     private startScript(scriptName: string): void {
-        let scriptToStart = this.scripts.find(s => s.source.name == scriptName);
+        let scriptToStart = this.scriptManager.find(scriptName);
         if (!scriptToStart) {
             this.error = `Unable to find script ${scriptName}`;
             this.addMessage(this.error, LogCategory.Error);
-            this.currentScript = 0;
+            this.scriptManager.clearCurrent();
             return;
         }
 
-        if (this.currentScript) {
-            this.stack[this.currentScript - 1].state.isCurrent = false;
+        if (this.scriptManager.hasCurrent()) {
+            this.scriptManager.getCurrent().state.isCurrent = false;
         }
-        let newScript = scriptToStart.start(this, this.waitState);
+        let newScript = scriptToStart.start(this, this.waitState, this.scriptManager);
         newScript.state.isCurrent = true;
-        this.currentScript = this.stack.push(newScript);
+        this.scriptManager.startNew(newScript);
         this.addMessage(`Starting script ${scriptName}`, LogCategory.Simulator);
 
-        let currentScript = this.stack[this.currentScript - 1];
+        let currentScript = this.scriptManager.getCurrent();
         this.executionEnvironment = currentScript.environment;
         this.executionEnvironment.state = 'Running';
+    }
+}
+
+export class ScriptManager {
+    scripts: InternalScript[];
+    stack: InternalScript[];
+    currentScript: number;
+
+    constructor(private owner: RobotSimulator) {        
+    }
+
+    initalise(): void {
+        this.scripts = [];
+        this.stack = [];
+        this.currentScript = 0;
+    }
+
+    add(script: InternalScript) {
+        this.scripts.push(script);
+    }
+
+    hasCurrent(): boolean {
+        return !!this.currentScript;
+    }
+
+    getCurrent(): InternalScript {
+        let currentScript = this.stack[this.currentScript - 1];
+        return currentScript;
+    }
+
+    clearCurrent(): void {
+        this.currentScript = 0;
+    }
+
+    returnToPrevious(): boolean {
+        this.currentScript--;
+        this.stack.pop();
+        return this.hasCurrent();
+    }
+
+    find(name: string): InternalScript {
+        let script = this.scripts.find(s => s.source.name == name);
+        return script;
+    }
+
+    startNew(script: InternalScript): void {
+        let newScript = script.start(this.owner, this.owner.waitState, this.owner.scriptManager, this.getCurrent());
+        this.currentScript = this.stack.push(newScript);
     }
 }
 
@@ -168,13 +214,13 @@ export class InternalScript extends ValidationResult {
         this.resources = resources;
     }
 
-    start(log: MessageLog, waitState: WaitState, parent?: InternalScript): InternalScript {
+    start(log: MessageLog, waitState: WaitState, scriptManager: ScriptManager, parent?: InternalScript): InternalScript {
         let started = new InternalScript(this, this.resources);
         started.state = this.state;
         started.currentFrame = started.frames.push(new ScriptFrame(started.ast, true));
         var env: ExecutionEnvironment;
         if (parent) env = parent.environment;
-        started.environment = new ExecutionEnvironment(started, log, env);
+        started.environment = new ExecutionEnvironment(started, log, env, scriptManager);
         started.environment.waitState = waitState;
         return started;
     }
