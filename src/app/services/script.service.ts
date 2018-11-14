@@ -54,6 +54,10 @@ export class ScriptService {
 
   save(script: Script): Observable<any> {
     script.format = 2;
+    script.resources.forEach(r => {
+      const temp: any = r.resourceType;
+      r.resourceType = parseInt(temp);
+    });
     if (script.id) {
       return this.update(script);
     } else {
