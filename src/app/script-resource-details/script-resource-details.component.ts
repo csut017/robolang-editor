@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, OnInit, Input, Output, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { Script } from '../data/script';
 import { ScriptResource, ResourceContent } from '../data/script-resource';
 import { ScriptSettingsService } from '../services/script-settings.service';
@@ -14,6 +14,7 @@ import { Resource } from '../data/resource';
 import { debounceTime } from 'rxjs/operators';
 import { ResourcesService } from '../services/resources.service';
 import { environment } from 'src/environments/environment';
+import { AceEditorComponent } from 'ng2-ace-editor';
 
 @Component({
   selector: 'app-script-resource-details',
@@ -25,11 +26,31 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
   constructor(private settingsService: ScriptSettingsService,
     private resourceService: ScriptResourceService,
     private scriptView: ScriptViewService,
-    private resourcesService: ResourcesService) { }
+    private resourcesService: ResourcesService) { 
+      this.baseItems = [
+        new resourceItem('weather.type', 'One word summary of the weather.', false),
+        new resourceItem('weather.current', 'Current weather.', false),
+        new resourceItem('weather.forecast', 'Forecasted weather.', false),
+        new resourceItem('time.full', 'The full current time (12 hour clock).'),
+        new resourceItem('time.hour', 'The current hour of the day (12 hour clock).'),
+        new resourceItem('time.minute', 'The current minute of the hour.'),
+        new resourceItem('time.second', 'The current second of the minute.'),
+        new resourceItem('time.dayPart', 'Current part of the day (morning, afternoon, evening, night).'),
+        new resourceItem('time.hourType', 'Whether the hour is AM or PM.'),
+        new resourceItem('date.full', 'The full current date.'),
+        new resourceItem('date.day', 'Current day of the month.'),
+        new resourceItem('date.dayth', 'Current day of the month (ordinal).'),
+        new resourceItem('date.dayOfWeek', 'Current day of the week (Monday to Sunday)'),
+        new resourceItem('date.month', 'Current month of the year.'),
+        new resourceItem('date.year', 'Current year.'),
+        new resourceItem('person.name', 'Name of the person.'),
+      ];
+    }
 
   @Input() currentScript: Script;
   @Input() currentResource: ScriptResource;
   @Output() saving = new EventEmitter<Script>();
+  @ViewChild(AceEditorComponent) editor: AceEditorComponent;
 
   settings: ScriptSettings;
   resourceTypes: ScriptValue[];
@@ -44,6 +65,8 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
   reviewResourceURL: string;
   newResourceUrl: string;
   resourceToUpload: any;
+  items: resourceItem[];
+  baseItems: resourceItem[];
 
   ngOnInit() {
     this.settingsService.getSettings()
@@ -123,6 +146,9 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
 
   ngOnChanges(_: SimpleChanges) {
     if (this.settings) this.loadContent();
+    this.items = [];
+    this.baseItems.forEach(i => this.items.push(i));
+    this.items.sort((a, b) => a.name == b.name ? 0 : a.name > b.name ? 1 : -1);
   }
 
   onResourceChanged() {
@@ -163,4 +189,16 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
   storeResource(event): void {
     this.resourceToUpload = event.target.files[0];
   }
+
+  insertItem(item: string): void {
+    const editor = this.editor.getEditor()
+    editor.insert('@' + item + ' ');
+    editor.focus();
+  }
+}
+
+class resourceItem {
+  constructor(public name: string, 
+    public description?: string,
+    public isLocal: boolean = true) {}
 }

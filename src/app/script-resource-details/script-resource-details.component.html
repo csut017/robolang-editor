@@ -28,9 +28,32 @@
   </clr-input-container>
   <div *ngIf="currentContent">
     <div *ngIf="currentResourceType.type=='text' || !currentResourceType.type">
-      <ace-editor [(text)]="currentContent.resource" [options]="{maxLines: 'Infinity'}" theme="chrome" mode="html"
-        style="min-height: calc(100vh - 500px);margin-bottom: 10px; margin-top: 10px; width:100%;">
-      </ace-editor>
+      <div class="clr-row">
+        <div class="clr-col-8">
+          <ace-editor [(text)]="currentContent.resource" [options]="{maxLines: 'Infinity'}" theme="chrome" mode="html"
+            style="min-height: calc(100vh - 500px);margin-bottom: 10px; margin-top: 10px; width:100%;">
+          </ace-editor>
+        </div>
+        <div class="clr-col-4">
+          <clr-tabs>
+            <clr-tab>
+              <button clrTabLink>Items</button>
+              <clr-tab-content *clrIfActive="true">
+                <table class="table table-noborder table-compact">
+                  <tbody>
+                    <tr *ngFor="let item of items">
+                      <td class="left">
+                        <button class="btn btn-link btn-sm" (click)="insertItem(item.name)" style="text-align: left; text-transform: none; margin: 0; padding: 0;">{{item.name}}</button>
+                      </td>
+                      <td class="left">{{item.description}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </clr-tab-content>
+            </clr-tab>
+          </clr-tabs>
+        </div>
+      </div>
     </div>
     <div *ngIf="currentResourceType.type=='resource'">
       <clr-tabs>
