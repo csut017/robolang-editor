@@ -26,26 +26,26 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
   constructor(private settingsService: ScriptSettingsService,
     private resourceService: ScriptResourceService,
     private scriptView: ScriptViewService,
-    private resourcesService: ResourcesService) { 
-      this.baseItems = [
-        new resourceItem('weather.type', 'One word summary of the weather.', false),
-        new resourceItem('weather.current', 'Current weather.', false),
-        new resourceItem('weather.forecast', 'Forecasted weather.', false),
-        new resourceItem('time.full', 'The full current time (12 hour clock).'),
-        new resourceItem('time.hour', 'The current hour of the day (12 hour clock).'),
-        new resourceItem('time.minute', 'The current minute of the hour.'),
-        new resourceItem('time.second', 'The current second of the minute.'),
-        new resourceItem('time.dayPart', 'Current part of the day (morning, afternoon, evening, night).'),
-        new resourceItem('time.hourType', 'Whether the hour is AM or PM.'),
-        new resourceItem('date.full', 'The full current date.'),
-        new resourceItem('date.day', 'Current day of the month.'),
-        new resourceItem('date.dayth', 'Current day of the month (ordinal).'),
-        new resourceItem('date.dayOfWeek', 'Current day of the week (Monday to Sunday)'),
-        new resourceItem('date.month', 'Current month of the year.'),
-        new resourceItem('date.year', 'Current year.'),
-        new resourceItem('person.name', 'Name of the person.'),
-      ];
-    }
+    private resourcesService: ResourcesService) {
+    this.baseItems = [
+      new resourceItem('weather.type', 'One word summary of the weather.', false),
+      new resourceItem('weather.current', 'Current weather.', false),
+      new resourceItem('weather.forecast', 'Forecasted weather.', false),
+      new resourceItem('time.full', 'The full current time (12 hour clock).'),
+      new resourceItem('time.hour', 'The current hour of the day (12 hour clock).'),
+      new resourceItem('time.minute', 'The current minute of the hour.'),
+      new resourceItem('time.second', 'The current second of the minute.'),
+      new resourceItem('time.dayPart', 'Current part of the day (morning, afternoon, evening, night).'),
+      new resourceItem('time.hourType', 'Whether the hour is AM or PM.'),
+      new resourceItem('date.full', 'The full current date.'),
+      new resourceItem('date.day', 'Current day of the month.'),
+      new resourceItem('date.dayth', 'Current day of the month (ordinal).'),
+      new resourceItem('date.dayOfWeek', 'Current day of the week (Monday to Sunday)'),
+      new resourceItem('date.month', 'Current month of the year.'),
+      new resourceItem('date.year', 'Current year.'),
+      new resourceItem('person.name', 'Name of the person.'),
+    ];
+  }
 
   @Input() currentScript: Script;
   @Input() currentResource: ScriptResource;
@@ -95,6 +95,10 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
             });
         }
       });
+    this.editor.setOptions({
+      enableBasicAutocompletion: false,
+      enableLiveAutocompletion:false
+    });
   }
 
   save(): void {
@@ -148,7 +152,7 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
     if (this.settings) this.loadContent();
     this.items = [];
     this.baseItems.forEach(i => this.items.push(i));
-    this.currentScript.parameters.forEach(p => this.items.push(new resourceItem(`parameter.${p.name}`, `Parameter ${p.name} of type ${p.dataTypeName}`)));
+    (this.currentScript.parameters || []).forEach(p => this.items.push(new resourceItem(`parameter.${p.name}`, `Parameter ${p.name} of type ${p.dataTypeName}`)));
     this.items.sort((a, b) => a.name == b.name ? 0 : a.name > b.name ? 1 : -1);
   }
 
@@ -199,7 +203,7 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
 }
 
 class resourceItem {
-  constructor(public name: string, 
+  constructor(public name: string,
     public description?: string,
-    public isLocal: boolean = true) {}
+    public isLocal: boolean = true) { }
 }

@@ -6,7 +6,8 @@
         {
             "label": "Build Production",
             "type": "shell",
-            "command": "ng build --prod --base-href=/robolang/"
+            "command": "ng build --prod --base-href=/robolang/",
+            "problemMatcher": []
         }
     ]
 }

@@ -1,5 +1,5 @@
 <form clrForm>
-  <div class="alert alert-warning" role="alert" *ngIf="!currentResourceType.type">
+  <div class="alert alert-warning" role="alert" *ngIf="currentResourceType && !currentResourceType.type">
     <div class="alert-items">
       <div class="alert-item static">
         <div class="alert-icon-wrapper">
@@ -16,13 +16,13 @@
     <input clrInput placeholder="name" name="input" [(ngModel)]="currentResource.name" required />
     <clr-control-error>This field is required!</clr-control-error>
   </clr-input-container>
-  <clr-select-container *ngIf="currentResourceType.type">
+  <clr-select-container *ngIf="currentResourceType && currentResourceType.type">
     <label>Data Type</label>
     <select clrSelect name="resourceType" [(ngModel)]="currentResource.resourceType" (change)="onResourceChanged()">
       <option *ngFor="let resourceType of resourceTypes" value="{{resourceType.id}}">{{resourceType.value}}</option>
     </select>
   </clr-select-container>
-  <clr-input-container *ngIf="!currentResourceType.type">
+  <clr-input-container *ngIf="currentResourceType && !currentResourceType.type">
     <label>Data Type</label>
     <input clrInput placeholder="Data Type" name="dataType" [(ngModel)]="currentResource.resourceTypeName" readonly />
   </clr-input-container>
