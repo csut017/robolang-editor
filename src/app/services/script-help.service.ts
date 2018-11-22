@@ -5,7 +5,7 @@ export class HelpInfo {
   description: string;
   requireChildren: boolean;
   arguments: FunctionArgument[] = [];
-  children: FunctionChild[] = [];
+  children: Child[] = [];
   parents: string[] = [];
   hasArguments: boolean = false;
   hasChildren: boolean = false;
@@ -29,6 +29,13 @@ export class HelpInfo {
 
   addChild(name: string, number: string): HelpInfo {
     var child = new FunctionChild(name, number);
+    this.children.push(child);
+    this.hasChildren = true;
+    return this;
+  }
+
+  addResourceChild(number: string): HelpInfo {
+    var child = new ResourceChild(number);
     this.children.push(child);
     this.hasChildren = true;
     return this;
@@ -62,12 +69,27 @@ export class FunctionArgument {
   }
 }
 
-export class FunctionChild {
+export interface Child {
+  number: string;
+  type: string;
+}
+
+export class FunctionChild implements Child {
   name: string;
   number: string;
+  type: string = 'Function';
 
   constructor(name: string, number: string) {
     this.name = name;
+    this.number = number;
+  }
+}
+
+export class ResourceChild implements Child {
+  number: string;
+  type: string = 'Resource';
+
+  constructor(number: string) {
     this.number = number;
   }
 }
@@ -148,6 +170,10 @@ export class ScriptHelpService {
         .addArgument('condition', ArgumentType.Any, true)
         .addChild('*', ChildNumber.OneOrMore)
         .addParent('switch'),
+      new HelpInfo('language', 'Defines a resource in a language.')
+        .addArgument('name', ArgumentType.String, true)
+        .addResourceChild(ChildNumber.One)
+        .addParent('resource'),
       new HelpInfo('less', 'Checks if the condition is less than the the input.')
         .addArgument('condition', ArgumentType.Any, true)
         .addChild('*', ChildNumber.OneOrMore)
@@ -186,6 +212,14 @@ export class ScriptHelpService {
         .addChild('after', ChildNumber.ZeroOrMore),
       new HelpInfo('reschedule', 'Reschedules the script after time has elapsed.')
         .addArgument('time', ArgumentType.Time, true),
+      new HelpInfo('resource', 'Defines a resource for the script')
+        .addArgument('name', ArgumentType.String, true)
+        .addArgument('type', ArgumentType.Type, true)
+        .addArgument('language', ArgumentType.String)
+        .addParent('-')
+        .addChild('language', ChildNumber.ZeroOrMore)
+        .addResourceChild(ChildNumber.OneOrZero)
+        .setIsServer(),
       new HelpInfo('response', 'Checks the user input to match a value.')
         .addArgument('text', ArgumentType.String, true)
         .addChild('*', ChildNumber.OneOrMore)

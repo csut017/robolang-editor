@@ -47,7 +47,7 @@
                           Children
                         </clr-stack-header>
                         <clr-stack-block *ngFor="let child of info.children">
-                          <clr-stack-label>{{child.name == '*' ? 'ANY' : child.name}}</clr-stack-label>
+                          <clr-stack-label>{{formatChild(child)}}</clr-stack-label>
                           <clr-stack-content>{{child.number}}</clr-stack-content>
                         </clr-stack-block>
                       </clr-stack-view>

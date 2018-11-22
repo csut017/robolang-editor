@@ -5,7 +5,7 @@ import { environment } from '../../environments/environment'
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Script } from '../data/script';
-import { ScriptHelpService, HelpInfo, FunctionArgument, FunctionChild } from './script-help.service';
+import { ScriptHelpService, HelpInfo, FunctionArgument, FunctionChild, Child } from './script-help.service';
 
 export class ValidationResult {
   source: Script;
@@ -34,9 +34,9 @@ export class ASTNode {
     if (argNode && argNode.children && argNode.children.length) {
       return argNode.children[0].token;
     }
-  
+
     return;
-  }  
+  }
 }
 
 export class ASTToken {
@@ -185,7 +185,7 @@ export class ValidationService {
       return result;
     }
 
-    var listMap: {[index:string]: boolean} = {};
+    var listMap: { [index: string]: boolean } = {};
     scripts.forEach(script => listMap[script.name] = true);
     result.scriptCalls.forEach(call => call.missing = !listMap[call.name]);
     return result;
@@ -259,12 +259,7 @@ export class ValidationService {
         result.issues.push(ParseError.FromToken(`'${funcName}' requires at least one child`, node.token));
       }
       if (fixed && node.children && node.children.length) {
-        node.children.forEach(c => {
-          const childName = c.token.value;
-          if (!item.children.find(ic => ic.name == childName)) {
-            result.issues.push(ParseError.FromToken(`Unexpected '${childName}' in ${funcName}'`, node.token));
-          }
-        });
+        node.children.forEach(c => this.validateChildIsAllowed(result, c, item));
       }
     } else {
       if (node.children && node.children.length) {
@@ -273,7 +268,27 @@ export class ValidationService {
     }
   }
 
-  private checkASTNodeChild(result: ValidationResult, node: ASTNode, funcName: string, child: FunctionChild): boolean {
+  private validateChildIsAllowed(result: ValidationResult, node: ASTNode, item: HelpInfo) {
+    switch (node.token.type) {
+      case 'FUNCTION':
+        const childName = node.token.value;
+        if (!item.children.find(ic => {
+          let funcChild = ic as FunctionChild;
+          return (ic.type == 'Function') && (funcChild.name == childName);
+        })) {
+          result.issues.push(ParseError.FromToken(`Unexpected '${childName}' in ${item.title}'`, node.token));
+        }
+        break;
+    }
+  }
+
+  private checkASTNodeChild(result: ValidationResult, node: ASTNode, funcName: string, child: Child): boolean {
+    if (child.type == 'Function') return this.checkASTNodeFunctionChild(result, node, funcName, child as FunctionChild);
+
+    return false;
+  }
+
+  private checkASTNodeFunctionChild(result: ValidationResult, node: ASTNode, funcName: string, child: FunctionChild): boolean {
     const childName = child.name == '*' ? 'child' : `'${child.name}' child`;
     var children = node.children || [];
     if (child.name != '*') children = children.filter(c => c.token.value == child.name);

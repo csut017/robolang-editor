@@ -7,7 +7,7 @@ import "brace";
 import "brace/theme/chrome";
 import "../roboLang";
 import { AceEditorComponent } from 'ng2-ace-editor';
-import { HelpInfo, ScriptHelpService } from '../services/script-help.service';
+import { HelpInfo, ScriptHelpService, Child, FunctionChild } from '../services/script-help.service';
 import { debounceTime, tap } from 'rxjs/operators';
 import { ScriptService } from '../services/script.service';
 import { ScriptResource } from '../data/script-resource';
@@ -152,7 +152,7 @@ export class ScriptEditorComponent implements OnInit, OnChanges {
     this.settingsService.getSettings()
       .subscribe(settings => this.defaultResourceType = settings.resourceTypes[0]);
 
-      this.help = this.scriptHelp.getAll();
+    this.help = this.scriptHelp.getAll();
     this.onResize({
       target: window
     });
@@ -283,5 +283,19 @@ export class ScriptEditorComponent implements OnInit, OnChanges {
     if (!this.currentScript.resources) this.currentScript.resources = [];
     this.currentScript.resources.push(res);
     this.scriptView.changeView('resource', res);
+  }
+
+  formatChild(child: Child): string {
+    switch (child.type) {
+      case 'Function':
+        let funcChild = child as FunctionChild;
+        return funcChild.name == '*' ? 'ANY' : funcChild.name;
+
+      case 'Resource':
+        return '<[resource]>';
+
+      default:
+        return '--Unknown--';
+    }
   }
 }

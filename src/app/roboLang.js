@@ -9,7 +9,7 @@ ace.define("ace/mode/python_highlight_rules", ["require", "exports", "module", "
     var keywords = (
       "response|wait|say|play|record|reschedule|doNothing|showScreen|switch|less|greater|" +
       "loop|variable|add|default|equal|call|timeout|clearScreen|select|repeat|function|" +
-      "parameter|defaultValue"
+      "parameter|defaultValue|resource|language"
     );
 
     var builtinConstants = (
