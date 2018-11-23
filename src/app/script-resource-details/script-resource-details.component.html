@@ -11,18 +11,30 @@
       </div>
     </div>
   </div>
+  <div class="alert alert-info" role="alert" *ngIf="isGenerated">
+    <div class="alert-items">
+      <div class="alert-item static">
+        <div class="alert-icon-wrapper">
+          <clr-icon class="alert-icon" shape="info-circle"></clr-icon>
+        </div>
+        <span class="alert-text">
+          Resource cannot be changed: Generated from Script
+        </span>
+      </div>
+    </div>
+  </div>
   <clr-input-container>
     <label>Name</label>
-    <input clrInput placeholder="name" name="input" [(ngModel)]="currentResource.name" required />
+    <input clrInput placeholder="name" name="input" [(ngModel)]="currentResource.name" required [readonly]="isGenerated" />
     <clr-control-error>This field is required!</clr-control-error>
   </clr-input-container>
-  <clr-select-container *ngIf="currentResourceType && currentResourceType.type">
+  <clr-select-container *ngIf="currentResourceType && currentResourceType.type && !isGenerated">
     <label>Data Type</label>
     <select clrSelect name="resourceType" [(ngModel)]="currentResource.resourceType" (change)="onResourceChanged()">
       <option *ngFor="let resourceType of resourceTypes" value="{{resourceType.id}}">{{resourceType.value}}</option>
     </select>
   </clr-select-container>
-  <clr-input-container *ngIf="currentResourceType && !currentResourceType.type">
+  <clr-input-container *ngIf="(currentResourceType && !currentResourceType.type) || isGenerated">
     <label>Data Type</label>
     <input clrInput placeholder="Data Type" name="dataType" [(ngModel)]="currentResource.resourceTypeName" readonly />
   </clr-input-container>

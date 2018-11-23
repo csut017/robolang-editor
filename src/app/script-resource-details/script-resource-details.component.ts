@@ -67,6 +67,7 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
   resourceToUpload: any;
   items: resourceItem[];
   baseItems: resourceItem[];
+  isGenerated: boolean;
 
   ngOnInit() {
     this.settingsService.getSettings()
@@ -154,6 +155,13 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
     this.baseItems.forEach(i => this.items.push(i));
     (this.currentScript.parameters || []).forEach(p => this.items.push(new resourceItem(`parameter.${p.name}`, `Parameter ${p.name} of type ${p.dataTypeName}`)));
     this.items.sort((a, b) => a.name == b.name ? 0 : a.name > b.name ? 1 : -1);
+
+    if (this.currentResource) {
+      ScriptResource.unpack(this.currentResource);
+      this.isGenerated = this.currentResource.isGenerated;
+    } else {
+      this.isGenerated = false;
+    }
   }
 
   onResourceChanged() {

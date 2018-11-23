@@ -13,7 +13,7 @@ export class ScriptParameter {
 
     // Flag packing and unpacking
     static pack(parameter: ScriptParameter): void {
-        const baseFlags = parameter.flags & 64;
+        const baseFlags = parameter.flags & 65472;
         parameter.flags = baseFlags
             + (parameter.isRequired ? 1 : 0)
             + (parameter.isSplit ? 2 : 0);
