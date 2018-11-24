@@ -96,10 +96,6 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
             });
         }
       });
-    this.editor.setOptions({
-      enableBasicAutocompletion: false,
-      enableLiveAutocompletion:false
-    });
   }
 
   save(): void {

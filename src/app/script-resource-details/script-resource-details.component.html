@@ -43,7 +43,7 @@
       <div class="clr-row">
         <div class="clr-col-8">
           <ace-editor [(text)]="currentContent.resource" [options]="{maxLines: 'Infinity'}" theme="chrome" mode="html"
-            style="min-height: calc(100vh - 500px);margin-bottom: 10px; margin-top: 10px; width:100%;">
+            style="min-height: calc(100vh - 500px);margin-bottom: 10px; margin-top: 10px; width:100%;" #editor>
           </ace-editor>
         </div>
         <div class="clr-col-4">
