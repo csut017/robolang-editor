@@ -25,6 +25,7 @@ import { BlocklyEditorComponent } from './blockly-editor/blockly-editor.componen
 import { RobotDetailsComponent } from './robot-details/robot-details.component';
 import { RobotScriptComponent } from './robot-script/robot-script.component';
 import { RobotSimulatorComponent } from './robot-simulator/robot-simulator.component';
+import { ScriptDownloadComponent } from './script-download/script-download.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { RobotSimulatorComponent } from './robot-simulator/robot-simulator.compo
     BlocklyEditorComponent,
     RobotDetailsComponent,
     RobotScriptComponent,
-    RobotSimulatorComponent
+    RobotSimulatorComponent,
+    ScriptDownloadComponent
   ],
   imports: [
     HttpClientModule,

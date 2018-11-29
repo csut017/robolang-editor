@@ -1,0 +1,20 @@
+<form clrForm>
+  <section class="form-block">
+    <div class="form-group">
+      <label>Options</label>
+      <div class="checkbox">
+        <input type="checkbox" id="includeCalled" name="includeCalled" [(ngModel)]="includeCalled" (change)="generateURL()">
+        <label for="includeCalled">Include Called Scripts</label>
+      </div>
+      <div class="checkbox">
+        <input type="checkbox" id="includeResources" name="includeResources" [(ngModel)]="includeResources" (change)="generateURL()">
+        <label for="includeResources">Include Binary Resources</label>
+      </div>
+    </div>
+  </section>
+  <div>
+    <a class="btn btn-outline" [href]="scriptDownloadLocation">
+      Download
+    </a>
+  </div>
+</form>

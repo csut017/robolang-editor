@@ -46,6 +46,12 @@
                   Script
                 </button>
               </clr-tree-node>
+              <clr-tree-node *ngIf="!currentScript.isAdding">
+                <button class="clr-treenode-link" [class.active]="view.currentView=='export'" (click)="scriptView.changeView('export')">
+                  <clr-icon shape="export"></clr-icon>
+                  Export
+                </button>
+              </clr-tree-node>
               <!-- <clr-tree-node>
                 <button class="clr-treenode-link" [class.active]="view.currentView=='blockly'" (click)="scriptView.changeView('blockly')">
                   <clr-icon shape="blocks-group" class="is-solid"></clr-icon>
@@ -112,6 +118,9 @@
             </div>
             <div *ngIf="!isLoading && view.currentView=='script'">
               <app-script-editor [currentScript]="currentScript" [scripts]="scripts" (saving)="save($event)"></app-script-editor>
+            </div>
+            <div *ngIf="!isLoading && view.currentView=='export'">
+              <app-script-download [currentScript]="currentScript"></app-script-download>
             </div>
             <!-- <div *ngIf="!isLoading && view.currentView=='blockly'">
               <app-blockly-editor [currentScript]="currentScript" (saving)="save($event)"></app-blockly-editor>
