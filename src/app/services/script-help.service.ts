@@ -138,6 +138,10 @@ export class ScriptHelpService {
         .addParent('moveTo'),
       new HelpInfo('call', 'Starts another script')
         .addArgument('script', ArgumentType.String, true),
+      new HelpInfo('choice', 'An option that can be performed')
+        .addArgument('weighting', ArgumentType.Number)
+        .addChild('*', ChildNumber.OneOrMore)
+        .addParent('random'),
       new HelpInfo('clearScreen', 'Clears the screen'),
       new HelpInfo('concat', 'Concatenates a string to a variable')
         .addArgument('variable', ArgumentType.Variable, true)
@@ -200,9 +204,8 @@ export class ScriptHelpService {
         .addArgument('movement', ArgumentType.String)
         .addArgument('sound', ArgumentType.String)
         .addArgument('wait', ArgumentType.Boolean),
-      new HelpInfo('random', 'Generates a random number. If min is not set, the minimum will be zero, if max is not set the maximum will be 100.')
-        .addArgument('min', ArgumentType.Number)
-        .addArgument('max', ArgumentType.Number),
+      new HelpInfo('random', 'Randomly chooses an option.')
+        .addChild('choice', ChildNumber.OneOrMore),
       new HelpInfo('record', 'Records an event.')
         .addArgument('log', ArgumentType.String, true)
         .addArgument('event', ArgumentType.String, true)
