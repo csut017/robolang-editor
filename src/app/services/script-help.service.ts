@@ -234,6 +234,13 @@ export class ScriptHelpService {
       new HelpInfo('select', 'Selects an item from a set of options.')
         .addArgument('variable', ArgumentType.Variable)
         .addArgument('from', ArgumentType.Any, true),
+      new HelpInfo('sensor', 'Checks a sensor value')
+        .addArgument('name', ArgumentType.String, true)
+        .addArgument('greater', ArgumentType.Any)
+        .addArgument('less', ArgumentType.Any)
+        .addArgument('equal', ArgumentType.Any)
+        .addArgument('in', ArgumentType.Any)
+        .addChild('*', ChildNumber.OneOrMore),
       new HelpInfo('showScreen', 'Displays a screen.')
         .addArgument('screen', ArgumentType.String, true)
         .addArgument('say', ArgumentType.Boolean),
@@ -258,7 +265,11 @@ export class ScriptHelpService {
         .addChild('default', ChildNumber.OneOrZero)
         .addChild('timeout', ChildNumber.OneOrZero),
       new HelpInfo('waitFor', 'Waits for a period of time and then performs the children.')
-        .addArgument('time', ArgumentType.Time, true)
+        .addArgument('time', ArgumentType.Time, true),
+      new HelpInfo('when', 'Responds to an external event (e.g. a sensor).')
+        .addArgument('timeout', ArgumentType.Time)
+        .addArgument('priority', ArgumentType.Number)
+        .addChild('sensor', ChildNumber.OneOrMore)
     ];
     this.help.sort((a, b) => a.title == b.title ? 0 : (a.title > b.title ? 1 : -1));
   }
