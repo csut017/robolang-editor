@@ -82,6 +82,7 @@ export class RobotsComponent implements OnInit {
               });
           } else {
             this.isLoading = false;
+            this.currentRobot.errorMessage = 'Robot has not been assigned';
           }
         });
     }

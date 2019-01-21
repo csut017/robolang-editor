@@ -23,4 +23,5 @@ export class Robot {
     isAdding: boolean;
     original: Robot;
     scriptsAreValid: boolean = true;
+    errorMessage: string = 'One or more of the scripts cannot be downloaded.';
 }
