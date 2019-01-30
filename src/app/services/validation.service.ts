@@ -64,10 +64,12 @@ export class Information<T> {
   name: string;
   items: T[];
   missing: boolean;
+  errors: string[];
 
   constructor(name: string) {
     this.name = name;
     this.items = [];
+    this.errors = [];
   }
 }
 
@@ -171,6 +173,11 @@ export class ValidationService {
   checkAST(result: ValidationResult): ValidationResult {
     result.issues = [];
     result.ast.forEach(node => this.checkASTNode(result, node));
+
+    result.functionDefinitions
+      .filter(func => result.resourcesUsed.find(res => res.name == func.value))
+      .forEach(func => result.issues.push(ParseError.FromToken(`Function '${func.value}' overrides resource`, func)));
+
     return result;
   }
 
