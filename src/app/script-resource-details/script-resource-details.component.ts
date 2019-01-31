@@ -66,6 +66,7 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
   newResourceUrl: string;
   resourceToUpload: any;
   items: resourceItem[];
+  elements: resourceItem[];
   baseItems: resourceItem[];
   isGenerated: boolean;
 
@@ -148,6 +149,13 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
   ngOnChanges(_: SimpleChanges) {
     if (this.settings) this.loadContent();
     this.items = [];
+    this.elements = [
+      new resourceItem('Button', 'A clickable button').withTemplate('[|]'),
+      new resourceItem('ID Button', 'A clickable button that sends an ID to the executor').withTemplate('[|=>]'),
+      new resourceItem('Image', 'An image').withTemplate('<image:|>'),
+      new resourceItem('Movement', 'A movement').withTemplate('<move:|>'),
+      new resourceItem('Video', 'A video').withTemplate('<video:|>')
+    ];
     this.baseItems.forEach(i => this.items.push(i));
     (this.currentScript.parameters || []).forEach(p => this.items.push(new resourceItem(`parameter.${p.name}`, `Parameter ${p.name} of type ${p.dataTypeName}`)));
     this.items.sort((a, b) => a.name == b.name ? 0 : a.name > b.name ? 1 : -1);
@@ -200,9 +208,20 @@ export class ScriptResourceDetailsComponent implements OnInit, OnChanges {
   }
 
   insertItem(item: string): void {
-    const editor = this.editor.getEditor()
+    const editor = this.editor.getEditor();
     editor.insert('@' + item + ' ');
     editor.focus();
+  }
+
+  insertElement(element: resourceItem): void {
+    const editor = this.editor.getEditor(),
+     sel = editor.getSelection(),
+     pos = element.template.indexOf('|'),
+     anchor = sel.getSelectionAnchor();
+    anchor.column += pos;
+    editor.insert(element.template.replace('|', ''));
+    editor.focus();
+    sel.moveCursorToPosition(anchor);
   }
 }
 
@@ -210,4 +229,11 @@ class resourceItem {
   constructor(public name: string,
     public description?: string,
     public isLocal: boolean = true) { }
+
+  template: string;
+
+  withTemplate(template: string): resourceItem {
+    this.template = template;
+    return this;
+  }
 }

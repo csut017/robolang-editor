@@ -63,6 +63,21 @@
                 </table>
               </clr-tab-content>
             </clr-tab>
+            <clr-tab>
+              <button clrTabLink>Elements</button>
+              <clr-tab-content>
+                <table class="table table-noborder table-compact">
+                  <tbody>
+                    <tr *ngFor="let element of elements">
+                      <td class="left">
+                        <button class="btn btn-link btn-sm" (click)="insertElement(element)" style="text-align: left; text-transform: none; margin: 0; padding: 0;">{{element.name}}</button>
+                      </td>
+                      <td class="left">{{element.description}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </clr-tab-content>
+            </clr-tab>
           </clr-tabs>
         </div>
       </div>
